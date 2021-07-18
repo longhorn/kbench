@@ -10,11 +10,12 @@ fi
 
 if [ -z $2 ];
 then
-        echo Require output file name
+        echo Require output file prefix
         exit 1
 fi
 
 TESTFILE=$1
-RESULT=$2
+OUTPUT=$2
 
-fio benchmark.fio --filename=$TESTFILE --output-format=json --output=$RESULT
+fio benchmark.fio --filename=$TESTFILE --output-format=json --output=${OUTPUT}-benchmark.json
+fio cpu.fio --idle-prof=percpu --filename=$TESTFILE --output-format=json --output=${OUTPUT}-cpu.json
