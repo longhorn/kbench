@@ -1,0 +1,16 @@
+
+=========================
+= FIO Benchmark Summary =
+=========================
+Random Read/Write
+IOPS:             97,354  / 88,112
+IOPS CPU(USR/SYS): ( 22% / 47% ) / ( 19% / 41% )
+Bandwidth:        545,213 KiB/sec   / 501,232 KiB/sec
+Average Latency:  118,988 ns  / 48,247 ns
+
+Sequential Read/Write
+IOPS:             110,141 / 106,701
+IOPS CPU(USR/SYS): ( 17% / 37% ) / ( 18% / 36% )
+Bandwidth:        547,264 KiB/sec   / 513,842 KiB/sec
+Average Latency:  43,962 ns  / 48,131 ns
+
