@@ -1,0 +1,51 @@
+[global]
+filename=testfile
+size=10g
+
+[read-rand-iops]
+readwrite=randread
+include iops-include.fio
+
+[write-rand-iops]
+readwrite=randwrite
+include iops-include.fio
+
+[read-rand-bw]
+readwrite=randread
+include bw-include.fio
+
+[write-rand-bw]
+readwrite=randwrite
+include bw-include.fio
+
+[read-rand-lat]
+readwrite=randread
+include lat-include.fio
+
+[write-rand-lat]
+readwrite=randwrite
+include lat-include.fio
+
+[read-seq-iops]
+readwrite=read
+include iops-include.fio
+
+[write-seq-iops]
+readwrite=write
+include iops-include.fio
+
+[read-seq-bw]
+readwrite=read
+include bw-include.fio
+
+[write-seq-bw]
+readwrite=write
+include bw-include.fio
+
+[read-seq-lat]
+readwrite=read
+include lat-include.fio
+
+[write-seq-lat]
+readwrite=write
+include lat-include.fio

@@ -1,0 +1,8 @@
+stonewall=1
+randrepeat=0
+verify=0
+ioengine=libaio
+direct=1
+time_based=1
+ramp_time=5s
+runtime=20s
