@@ -1,5 +1,4 @@
 [global]
-filename=testfile
 size=10g
 
 [read-rand-iops]
