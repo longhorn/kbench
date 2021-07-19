@@ -1,0 +1,18 @@
+
+=====================
+FIO Benchmark Summary
+For: ./fio-results/Samsung_850_PRO_512GB/kernel-5.4.0-xfs-default
+=====================
+
+Random Read/Write
+IOPS:             97,499  / 87,479
+Bandwidth:        546,619 KiB/sec   / 500,158 KiB/sec
+Average Latency:  119,830 ns  / 48,214 ns
+
+Sequential Read/Write
+IOPS:             108,090 / 106,557
+Bandwidth:        547,812 KiB/sec   / 512,908 KiB/sec
+Average Latency:  43,613 ns  / 48,420 ns
+
+CPU Idleness: 94%
+

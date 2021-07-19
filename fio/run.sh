@@ -2,6 +2,8 @@
 
 set -e
 
+CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
+
 if [ -z $1 ];
 then
         echo Require test file name
@@ -17,5 +19,7 @@ fi
 TESTFILE=$1
 OUTPUT=$2
 
-fio benchmark.fio --filename=$TESTFILE --output-format=json --output=${OUTPUT}-benchmark.json
-fio cpu.fio --idle-prof=percpu --filename=$TESTFILE --output-format=json --output=${OUTPUT}-cpu.json
+fio $CURRENT_DIR/benchmark.fio --filename=$TESTFILE --output-format=json --output=${OUTPUT}-benchmark.json
+fio $CURRENT_DIR/cpu.fio --idle-prof=percpu --filename=$TESTFILE --output-format=json --output=${OUTPUT}-cpu.json
+
+$CURRENT_DIR/parse.sh $OUTPUT
