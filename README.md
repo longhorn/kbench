@@ -4,6 +4,26 @@ Various benchmark for storage and Kubernetes.
 
 ## FIO
 
+### Deploy in Kubernetes cluster
+
+Start:
+```
+kubectl apply -f deploy/fio.yaml
+```
+
+Result:
+```
+kubectl logs benchmark-xxxxx
+```
+
+Cleanup:
+```
+kubectl delete -f deploy/fio.yaml
+```
+
+See YAML for available options
+
+### Running as a binary locally
 Usage:
 ```
 ./fio/run.sh <test_target> <output_prefix>
@@ -12,7 +32,7 @@ Usage:
 Intermediate result will be saved into `<output_prefix>-benchmark.json` and `<output_prefix>-cpu.json`.
 The output will be printed out as well as saved into `<output_prefix>.summary`.
 
-### Example
+#### Example
 ```
 $ export TEST_TARGET=/dev/sdxx
 $ export OUTPUT_PREFIX=./fio-results/Samsung_850_PRO_512GB/raw-block
@@ -39,4 +59,6 @@ CPU Idleness: 74%
 
 Note: the benchmark for FIO will take about 6 minutes to finish.
 
-TODO: Containerize the FIO test.
+### Understanding the result
+
+One thing need to pay extra attention regarding the result, is the CPU Idleness should be at least 40% to guarantee the test doesn't become CPU bound.
