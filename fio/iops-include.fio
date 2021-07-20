@@ -1,3 +1,2 @@
 bs=4K
 iodepth=64
-include common-include.fio

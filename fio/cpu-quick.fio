@@ -3,4 +3,4 @@ readwrite=randrw
 rwmixread=50
 bs=512
 iodepth=256
-include common-include.fio
+include quick-include.fio
