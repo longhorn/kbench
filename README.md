@@ -43,7 +43,7 @@ By default:
     * You can specify the storage class with the YAML locally.
 2. **Filesystem mode** will be used.
     * You can switch to the block mode with the YAML locally.
-3. The test requires a **11G** PVC temporarily.
+3. The test requires a **3G** PVC temporarily.
     * You can change the test size with the YAML locally.
 
 One line to start benchmarking your default storage class:
