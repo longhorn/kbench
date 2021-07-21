@@ -5,7 +5,7 @@ metadata:
 spec:
   volumeMode: Filesystem
   #volumeMode: Block
-  storageClassName: longhorn  # replace with your storage class
+  #storageClassName: longhorn  # replace with your storage class
   #storageClassName: local-path
   accessModes:
     - ReadWriteOnce
@@ -19,6 +19,9 @@ metadata:
   name: benchmark
 spec:
   template:
+    metadata:
+      labels:
+        benchmark: fio
     spec:
       containers:
       - name: benchmark

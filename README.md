@@ -33,29 +33,32 @@ Note: the benchmark for FIO will take about 6 minutes to finish.
 
 #### Understanding the result
 
-* CPU Idleness indicates how busy is the CPU on the node that's running the test. And it doesn't reflect the load on the whole cluster for distributed storage systems.
+* **CPU Idleness** indicates how busy is the CPU on the node that's running the test. And it doesn't reflect the load on the whole cluster for distributed storage systems.
 * For **latency test**, the CPU Idleness should be at least 40% to guarantee the test won't be impacted by CPU starving.
 
 ### Deploy in Kubernetes cluster
 
+By default, the benchmark will use the default storage class with filesystem mode to create a PVC for FIO testing.
+
 Start:
 ```
-kubectl apply -f deploy/fio.yaml
+kubectl apply -f https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio.yaml
 ```
 
 Get Result:
 ```
-kubectl logs benchmark-xxxxx
+kubectl logs -l benchmark=fio
 ```
 
 Cleanup:
 ```
-kubectl delete -f deploy/fio.yaml
+kubectl delete -f https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio.yaml
 ```
 
-See YAML for available options.
+See [./deploy/fio.yaml](https://github.com/yasker/benchmark/blob/main/deploy/fio.yaml) for available options.
 
 ### Run as container locally
+
 ```
 docker run -v /volume yasker/benchmark:latest /volume/test.img
 ```
