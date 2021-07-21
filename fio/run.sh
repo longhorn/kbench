@@ -18,17 +18,18 @@ fi
 
 echo TEST_FILE: $TEST_FILE
 
-TEST_SIZE="10g"
-if [ -n "$SIZE" ]; then
-	TEST_SIZE=$SIZE
-fi
-echo TEST_SIZE: $TEST_SIZE
-
 OUTPUT=$2
 if [ -z $OUTPUT ];
 then
 	OUTPUT=test_device
 fi
+echo TEST_OUTPUT_PREFIX: $OUTPUT
+
+TEST_SIZE="10g"
+if [ -n "$SIZE" ]; then
+       TEST_SIZE=$SIZE
+fi
+echo TEST_SIZE: $TEST_SIZE
 
 IOPS_FIO="iops.fio"
 BW_FIO="bandwidth.fio"
@@ -40,14 +41,20 @@ if [ -n "$QUICK_MODE" ]; then
         LAT_FIO="latency-quick.fio"
 fi
 
-echo Benchmarking $IOPS_FIO
-fio $CURRENT_DIR/$IOPS_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=${OUTPUT}-iops.json
-echo Benchmarking $BW_FIO
-fio $CURRENT_DIR/$BW_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=${OUTPUT}-bandwidth.json
-echo Benchmarking $LAT_FIO
-fio $CURRENT_DIR/$LAT_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=${OUTPUT}-latency.json
+OUTPUT_IOPS=${OUTPUT}-iops.json
+OUTPUT_BW=${OUTPUT}-bandwidth.json
+OUTPUT_LAT=${OUTPUT}-latency.json
 
-$CURRENT_DIR/parse.sh $OUTPUT
+echo Benchmarking $IOPS_FIO into $OUTPUT_IOPS
+fio $CURRENT_DIR/$IOPS_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+	--output-format=json --output=$OUTPUT_IOPS
+echo Benchmarking $BW_FIO into $OUTPUT_BW
+fio $CURRENT_DIR/$BW_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+	--output-format=json --output=$OUTPUT_BW
+echo Benchmarking $LAT_FIO into $OUTPUT_LAT
+fio $CURRENT_DIR/$LAT_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+	--output-format=json --output=$OUTPUT_LAT
+
+if [ -z "$SKIP_PARSE" ]; then
+        $CURRENT_DIR/parse.sh $OUTPUT
+fi
