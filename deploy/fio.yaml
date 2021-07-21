@@ -11,7 +11,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 11Gi
 ---
 apiVersion: batch/v1
 kind: Job
@@ -30,7 +30,7 @@ spec:
         - name: FILE_NAME
           value: "/volume/test"
         - name: SIZE
-          value: "800m" # must be smaller or match the PVC size
+          value: "10G" # must be smaller or match the PVC size
         volumeMounts:
         - name: vol
           mountPath: /volume/
