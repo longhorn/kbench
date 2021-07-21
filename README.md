@@ -42,7 +42,7 @@ By default, the benchmark will use the default storage class with filesystem mod
 
 Start:
 ```
-kubectl apply -f https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio.yaml
+kubectl apply -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
 ```
 
 Get Result:
@@ -52,19 +52,19 @@ kubectl logs -l benchmark=fio
 
 Cleanup:
 ```
-kubectl delete -f https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio.yaml
+kubectl delete -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
 ```
 
-See [./deploy/fio.yaml](https://github.com/yasker/benchmark/blob/main/deploy/fio.yaml) for available options.
+See [./deploy/fio.yaml](https://github.com/longhorn/benchmark/blob/main/deploy/fio.yaml) for available options.
 
 ### Run as container locally
 
 ```
-docker run -v /volume yasker/benchmark:latest /volume/test.img
+docker run -v /volume longhornio/benchmark:latest /volume/test.img
 ```
 e.g.
 ```
-docker run -e "SIZE=100M" -v /volume yasker/benchmark:latest /volume/test.img
+docker run -e "SIZE=100M" -v /volume longhornio/benchmark:latest /volume/test.img
 ```
 
 ### Run as a binary locally
@@ -82,3 +82,12 @@ e.g.
 Intermediate result will be saved into `<output_prefix>-iops.json`, `<output_prefix>-bandwidth.json` and `<output_prefix>-latency.json`.
 The output will be printed out as well as saved into `<output_prefix>.summary`.
 
+## License
+
+Copyright (c) 2014-2021 The Longhorn Authors
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.

@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: benchmark
-        image: yasker/benchmark:latest
+        image: longhornio/benchmark:latest
         imagePullPolicy: Always
         env:
         #- name: QUICK_MODE  # for debugging
