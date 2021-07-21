@@ -61,7 +61,7 @@ printf -v cxt "IOPS (Read/Write)\n$FMT$FMT$FMT\n"\
 	"Sequential:" \
 	"$SEQ_READ_IOPS / $SEQ_WRITE_IOPS" \
 	"CPU Idleness:" \
-	"$CPU_IDLE_PCT_IOPS"
+	"$CPU_IDLE_PCT_IOPS%"
 SUMMARY+=$cxt
 
 printf -v cxt "Bandwidth in KiB/sec (Read/Write)\n$FMT$FMT$FMT\n"\
@@ -70,7 +70,7 @@ printf -v cxt "Bandwidth in KiB/sec (Read/Write)\n$FMT$FMT$FMT\n"\
 	"Sequential:" \
 	"$SEQ_READ_BW / $SEQ_WRITE_BW" \
 	"CPU Idleness:" \
-	"$CPU_IDLE_PCT_BW"
+	"$CPU_IDLE_PCT_BW%"
 SUMMARY+=$cxt
 
 printf -v cxt "Latency in ns (Read/Write)\n$FMT$FMT$FMT\n"\
@@ -79,7 +79,7 @@ printf -v cxt "Latency in ns (Read/Write)\n$FMT$FMT$FMT\n"\
 	"Sequential:" \
 	"$SEQ_READ_LAT / $SEQ_WRITE_LAT" \
 	"CPU Idleness:" \
-	"$CPU_IDLE_PCT_LAT"
+	"$CPU_IDLE_PCT_LAT%"
 SUMMARY+=$cxt
 
 echo "$SUMMARY" > $RESULT
