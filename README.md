@@ -38,16 +38,22 @@ Note: the benchmark for FIO will take about 6 minutes to finish.
 
 ### Deploy in Kubernetes cluster
 
-By default, the benchmark will use the default storage class with filesystem mode to create a PVC for FIO testing.
+By default:
+1. The benchmark will use the **default storage class**.
+    * You can specify the storage class with the YAML locally.
+2. **Filesystem mode** will be used.
+    * You can switch to the block mode with the YAML locally.
+3. The test requires a **11G** PVC temporarily.
+    * You can change the test size with the YAML locally.
 
-Start:
+One line to start benchmarking your default storage class:
 ```
 kubectl apply -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
 ```
 
 Get Result:
 ```
-kubectl logs -l benchmark=fio
+kubectl logs -l benchmark=fio -f
 ```
 
 Cleanup:
