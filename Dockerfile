@@ -1,6 +1,6 @@
-FROM alpine
+FROM ubuntu:20.04
 
-RUN apk --no-cache add fio bash jq
+RUN apt update && apt install -y fio bash jq
 
 ADD ./fio/ /fio/
 WORKDIR ["/fio/"]

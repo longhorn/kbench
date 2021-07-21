@@ -9,35 +9,42 @@ then
 fi
 
 PREFIX=${1}
-OUTPUT=${PREFIX}-benchmark.json
-OUTPUT_CPU=${PREFIX}-cpu.json
+OUTPUT_IOPS=${PREFIX}-iops.json
+OUTPUT_BW=${PREFIX}-bandwidth.json
+OUTPUT_LAT=${PREFIX}-latency.json
 
-if [ ! -f "$OUTPUT" ]; then
-        echo "$OUTPUT doesn't exist"
-        exit 1
+if [ ! -f "$OUTPUT_IOPS" ]; then
+        echo "$OUTPUT_IOPS doesn't exist"
+else
+        READ_RAND_IOPS=`cat $OUTPUT_IOPS | jq '.jobs[0].read.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
+        WRITE_RAND_IOPS=`cat $OUTPUT_IOPS | jq '.jobs[1].write.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
+        READ_SEQ_IOPS=`cat $OUTPUT_IOPS | jq '.jobs[2].read.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
+        WRITE_SEQ_IOPS=`cat $OUTPUT_IOPS | jq '.jobs[3].write.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
+        CPU_IDLE_PCT_IOPS=`cat $OUTPUT_IOPS | jq '.cpu_idleness.system' | cut -f1 -d.`"%"
+
 fi
 
-if [ ! -f "$OUTPUT_CPU" ]; then
-        echo "$OUTPUT_CPU doesn't exist"
-        exit 1
+if [ ! -f "$OUTPUT_BW" ]; then
+        echo "$OUTPUT_BW doesn't exist"
+else
+        READ_RAND_BW=`cat $OUTPUT_BW | jq '.jobs[0].read.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
+        WRITE_RAND_BW=`cat $OUTPUT_BW | jq '.jobs[1].write.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
+        READ_SEQ_BW=`cat $OUTPUT_BW | jq '.jobs[2].read.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
+        WRITE_SEQ_BW=`cat $OUTPUT_BW | jq '.jobs[3].write.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
+        CPU_IDLE_PCT_BW=`cat $OUTPUT_BW| jq '.cpu_idleness.system' | cut -f1 -d.`"%"
+fi
+
+if [ ! -f "$OUTPUT_LAT" ]; then
+        echo "$OUTPUT_LAT doesn't exist"
+else
+        READ_RAND_LAT=`cat $OUTPUT_LAT | jq '.jobs[0].read.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
+        WRITE_RAND_LAT=`cat $OUTPUT_LAT | jq '.jobs[1].write.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
+        READ_SEQ_LAT=`cat $OUTPUT_LAT | jq '.jobs[2].read.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
+        WRITE_SEQ_LAT=`cat $OUTPUT_LAT | jq '.jobs[3].write.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
+        CPU_IDLE_PCT_LAT=`cat $OUTPUT_LAT| jq '.cpu_idleness.system' | cut -f1 -d.`"%"
 fi
 
 RESULT=${1}.summary
-
-READ_RAND_IOPS=`cat $OUTPUT | jq '.jobs[0].read.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
-WRITE_RAND_IOPS=`cat $OUTPUT | jq '.jobs[1].write.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
-READ_RAND_BW=`cat $OUTPUT | jq '.jobs[2].read.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
-WRITE_RAND_BW=`cat $OUTPUT | jq '.jobs[3].write.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
-READ_RAND_LAT=`cat $OUTPUT | jq '.jobs[4].read.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
-WRITE_RAND_LAT=`cat $OUTPUT | jq '.jobs[5].write.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
-READ_SEQ_IOPS=`cat $OUTPUT | jq '.jobs[6].read.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
-WRITE_SEQ_IOPS=`cat $OUTPUT | jq '.jobs[7].write.iops_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`
-READ_SEQ_BW=`cat $OUTPUT | jq '.jobs[8].read.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
-WRITE_SEQ_BW=`cat $OUTPUT | jq '.jobs[9].write.bw_mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" KiB/sec"
-READ_SEQ_LAT=`cat $OUTPUT | jq '.jobs[10].read.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
-WRITE_SEQ_LAT=`cat $OUTPUT | jq '.jobs[11].write.lat_ns.mean'| sed ':a;s/\B[0-9]\{3\}\>/,&/;ta' | cut -f1 -d.`" ns"
-
-CPU_IDLE_PCT=`cat $OUTPUT_CPU | jq '.cpu_idleness.system' | cut -f1 -d.`"%"
 
 QUICK_MODE_TEXT="QUICK MODE: DISABLED"
 if [ -n "$QUICK_MODE" ]; then
@@ -56,16 +63,20 @@ $SIZE_TEXT
 $QUICK_MODE_TEXT
 =====================
 
-Random Read/Write
-IOPS:             $READ_RAND_IOPS  / $WRITE_RAND_IOPS
-Bandwidth:        $READ_RAND_BW   / $WRITE_RAND_BW
-Average Latency:  $READ_RAND_LAT  / $WRITE_RAND_LAT
+IOPS (Read/Write):
+Random:         $READ_RAND_IOPS  / $WRITE_RAND_IOPS
+Sequential:     $READ_SEQ_IOPS / $WRITE_SEQ_IOPS
+CPU Idleness:   $CPU_IDLE_PCT_IOPS
 
-Sequential Read/Write
-IOPS:             $READ_SEQ_IOPS / $WRITE_SEQ_IOPS
-Bandwidth:        $READ_SEQ_BW   / $WRITE_SEQ_BW
-Average Latency:  $READ_SEQ_LAT  / $WRITE_SEQ_LAT
+Bandwidth (Read/Write):
+Random:         $READ_RAND_BW / $WRITE_RAND_BW
+Sequential:     $READ_SEQ_BW / $WRITE_SEQ_BW
+CPU Idleness:   $CPU_IDLE_PCT_BW
 
-CPU Idleness: $CPU_IDLE_PCT
+Latency (Read/Write):
+Random:         $READ_RAND_LAT / $WRITE_RAND_LAT
+Sequential:     $READ_SEQ_LAT / $WRITE_SEQ_LAT
+CPU Idleness:   $CPU_IDLE_PCT_LAT
+
 " > $RESULT
 cat $RESULT

@@ -1,6 +1,0 @@
-[read-write-mix-iops-cpu-bound]
-readwrite=randrw
-rwmixread=50
-bs=512
-iodepth=256
-include quick-include.fio

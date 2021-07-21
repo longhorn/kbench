@@ -30,18 +30,24 @@ then
 	OUTPUT=test_device
 fi
 
-BENCHMARK_FIO="benchmark.fio"
-CPU_FIO="cpu.fio"
+IOPS_FIO="iops.fio"
+BW_FIO="bandwidth.fio"
+LAT_FIO="latency.fio"
 if [ -n "$QUICK_MODE" ]; then
 	echo QUICK_MODE: enabled
-	BENCHMARK_FIO="benchmark-quick.fio"
-	CPU_FIO="cpu-quick.fio"
+        IOPS_FIO="iops-quick.fio"
+        BW_FIO="bandwidth-quick.fio"
+        LAT_FIO="latency-quick.fio"
 fi
-echo Running $BENCHMARK_FIO and $CPU_FIO
 
-fio $CURRENT_DIR/$BENCHMARK_FIO --eta=always --eta-interval=10s --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=${OUTPUT}-benchmark.json
-fio $CURRENT_DIR/$CPU_FIO --eta=always --eta-interval=10s --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=${OUTPUT}-cpu.json
+echo Benchmarking $IOPS_FIO
+fio $CURRENT_DIR/$IOPS_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+	--output-format=json --output=${OUTPUT}-iops.json
+echo Benchmarking $BW_FIO
+fio $CURRENT_DIR/$BW_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+	--output-format=json --output=${OUTPUT}-bandwidth.json
+echo Benchmarking $LAT_FIO
+fio $CURRENT_DIR/$LAT_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+	--output-format=json --output=${OUTPUT}-latency.json
 
 $CURRENT_DIR/parse.sh $OUTPUT
