@@ -31,10 +31,37 @@ CPU Idleness:   74%
 
 Note: the benchmark for FIO will take about 6 minutes to finish.
 
-#### Understanding the result
+### Tweak the options
 
-* **CPU Idleness** indicates how busy is the CPU on the node that's running the test. And it doesn't reflect the load on the whole cluster for distributed storage systems.
-* For **latency test**, the CPU Idleness should be at least 40% to guarantee the test won't be impacted by CPU starving.
+For official benchmarking:
+1. `SIZE` environmental variable: the size should be **at least 25 times the read/write bandwidth** to avoid the caching impacting the result.
+1. If you're testing a distributed storage solution like Longhorn, always **test against the local storage first** to know what's the baseline.
+    * You can install a storage provider for local storage like [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) for this test if you're testing with Kubernetes.
+
+### Understanding the result
+* **IOPS**: IO operations per second.
+    * It's a measurement of how many IO operations can the device handle in a second, mainly concerning the smaller IO chunks, e.g. 4k.
+* **Bandwidth**: Also called **throughput**.
+    * It's a measurement of how many data can the device read/write in a second. It's mainly concering the bigger IO chunks, e.g. 128k.
+* **CPU Idleness**: How idle is the CPU on the node that's running the test.
+    * It's a measurement of the CPU load/overhead that the storage device has generated.
+    * Notice this is idleness, so if the value is higher, it means the CPUs on that node have more free cycles.
+    * Unforunately at this moment, this measurement cannot reflect the load on the whole cluster for distributed storage systems. But it's still a worthy reference regarding the storage client's CPU load when benchmarking (depends on how distributed storage was architected).
+
+### Understanding the result of a distributed storage system
+
+For a distributed storage system, you always need to test the local storage first as a baseline.
+
+Something is *wrong* when:
+1. You're getting **lower read latency** than local storage.
+	* You might get higher read IOPS/bandwidth than local storage due to the storage engines can aggregate performance from different nodes/disks. But you shouldn't be able to get lower latency on reading compare to the local storage.
+	* If that happens, it's most likely due to there is a cache. Increase the `SIZE` to avoid that.
+1. You're getting **better write IOPS/bandwidth/latency** than local storage.
+	* It's almost impossible to get better write performance compare to the local storage for a distributed storage solution, unless you have a persistent caching device in front of the local storage.
+	* If you are getting this result, it's likely the storage solution is not crash-consistent, so it doesn't commit the data into the disk before respond, which means in the case of an incident, you might lose data.
+1. You're getting low **CPU Idleness** for **latency benchmark** , e.g. <40%.
+	* For **latency benchmark**, the CPU Idleness should be at least 40% to guarantee the test won't be impacted by CPU starving.
+	* If this happens, adding more CPUs to the node, or move to a beefer machine.
 
 ### Deploy in Kubernetes cluster
 
