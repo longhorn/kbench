@@ -4,6 +4,38 @@ Various benchmark for storage and Kubernetes.
 
 ## FIO
 
+### Example Result
+```
+=====================
+FIO Benchmark Summary
+For: ./fio-results/Samsung_850_PRO_512GB/raw-block
+SIZE: 10g
+QUICK MODE: DISABLED
+=====================
+
+IOPS (Read/Write):
+Random:         89,777  / 83,867
+Sequential:     105,151 / 107,256
+CPU Idleness:   68%
+
+Bandwidth (Read/Write):
+Random:         512,205 KiB/sec / 478,912 KiB/sec
+Sequential:     519,303 KiB/sec / 522,566 KiB/sec
+CPU Idleness:   98%
+
+Latency (Read/Write):
+Random:         114,095 ns / 44,515 ns
+Sequential:     40,634 ns / 45,024 ns
+CPU Idleness:   74%
+```
+
+Note: the benchmark for FIO will take about 6 minutes to finish.
+
+#### Understanding the result
+
+* CPU Idleness indicates how busy is the CPU on the node that's running the test. And it doesn't reflect the load on the whole cluster for distributed storage systems.
+* For **latency test**, the CPU Idleness should be at least 40% to guarantee the test won't be impacted by CPU starving.
+
 ### Deploy in Kubernetes cluster
 
 Start:
@@ -11,7 +43,7 @@ Start:
 kubectl apply -f deploy/fio.yaml
 ```
 
-Result:
+Get Result:
 ```
 kubectl logs benchmark-xxxxx
 ```
@@ -21,44 +53,29 @@ Cleanup:
 kubectl delete -f deploy/fio.yaml
 ```
 
-See YAML for available options
+See YAML for available options.
 
-### Running as a binary locally
-Usage:
+### Run as container locally
 ```
-./fio/run.sh <test_target> <output_prefix>
+docker run -v /volume yasker/benchmark:latest /volume/test.img
+```
+e.g.
+```
+docker run -e "SIZE=100M" -v /volume yasker/benchmark:latest /volume/test.img
 ```
 
-Intermediate result will be saved into `<output_prefix>-benchmark.json` and `<output_prefix>-cpu.json`.
+### Run as a binary locally
+
+Notice in this case, `fio` is required locally.
+
+```
+./fio/run.sh <test_file> <output_prefix>
+```
+e.g.
+```
+./fio/run.sh /dev/sdaxxx ~/fio-results/Samsung_850_PRO_512GB/raw-bloc
+```
+
+Intermediate result will be saved into `<output_prefix>-iops.json`, `<output_prefix>-bandwidth.json` and `<output_prefix>-latency.json`.
 The output will be printed out as well as saved into `<output_prefix>.summary`.
 
-#### Example
-```
-$ export TEST_TARGET=/dev/sdxx
-$ export OUTPUT_PREFIX=./fio-results/Samsung_850_PRO_512GB/raw-block
-$ sudo ./fio/run.sh $TEST_TARGET $OUTPUT_PREFIX
-....
-....
-=====================
-FIO Benchmark Summary
-For: ./fio-results/Samsung_850_PRO_512GB/raw-block
-=====================
-
-Random Read/Write
-IOPS:             97,831  / 87,143
-Bandwidth:        546,501 KiB/sec   / 506,343 KiB/sec
-Average Latency:  118,385 ns  / 45,925 ns
-
-Sequential Read/Write
-IOPS:             106,640 / 105,740
-Bandwidth:        548,037 KiB/sec   / 513,163 KiB/sec
-Average Latency:  43,137 ns  / 46,133 ns
-
-CPU Idleness: 74%
-```
-
-Note: the benchmark for FIO will take about 6 minutes to finish.
-
-### Understanding the result
-
-One thing need to pay extra attention regarding the result, is the CPU Idleness should be at least 40% to guarantee the test doesn't become CPU bound.
