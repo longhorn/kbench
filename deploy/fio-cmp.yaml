@@ -11,7 +11,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 3Gi
+      storage: 31Gi
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -26,7 +26,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 3Gi
+      storage: 31Gi
 ---
 apiVersion: batch/v1
 kind: Job
@@ -46,15 +46,15 @@ spec:
         #- name: QUICK_MODE  # for debugging
         #  value: "1"
         - name: FIRST_VOL_NAME
-          value: first_volume
+          value: Local-Path
         - name: FIRST_VOL_FILE
           value: "/volume1/test"
         - name: SECOND_VOL_NAME
-          value: second_volume
+          value: Longhorn
         - name: SECOND_VOL_FILE
           value: "/volume2/test"
         - name: SIZE
-          value: "2G" # must be smaller or match the PVC size
+          value: "30G" # must be smaller or match the PVC size
         volumeMounts:
         - name: vol1
           mountPath: /volume1/
