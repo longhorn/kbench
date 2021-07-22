@@ -107,17 +107,17 @@ By default:
 
 Step to deploy:
 1. One line to start benchmarking your default storage class:
-```
-kubectl apply -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
-```
+    ```
+    kubectl apply -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
+    ```
 1. Observe the Result:
-```
-kubectl logs -l benchmark=fio -f
-```
+    ```
+    kubectl logs -l benchmark=fio -f
+    ```
 1. Cleanup:
-```
-kubectl delete -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
-```
+    ```
+    kubectl delete -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
+    ```
 
 Note: a single benchmark for FIO will take about 6 minutes to finish.
 
@@ -126,9 +126,9 @@ See [./deploy/fio.yaml](https://github.com/longhorn/benchmark/blob/main/deploy/f
 #### Deploy Comparison Benchmark in Kubernetes cluster
 
 1. Get a local copy of `fio-cmp.yaml`
-```
-$ wget https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio-cmp.yaml
-```
+    ```
+    wget https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio-cmp.yaml
+    ```
 1. Set the storage class for each volume you want to compare.
 * By default, it's `local-path` vs `longhorn`.
 * You can install a storage provider for local storage like [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) for this test if you're testing with Kubernetes.
@@ -138,17 +138,17 @@ $ wget https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio-cmp.
 * By default, the size for comparison benchmark is **`30G`**.
 * As mentioned above, for formal benchmark, the size should be **at least 25 times the read/write bandwidth** to avoid the caching impacting the result.
 1. Deploy using
-```
-$ kubectl apply -f fio-cmp.yaml
-```
+    ```
+    kubectl apply -f fio-cmp.yaml
+    ```
 1. Observe the result:
-```
-kubectl logs -l benchmark=fio -f
-```
+    ```
+    kubectl logs -l benchmark=fio -f
+    ```
 1. Cleanup:
-```
-kubectl delete -f fio-cmp.yaml
-```
+    ```
+    kubectl delete -f fio-cmp.yaml
+    ```
 
 Note: a comparison benchmark for FIO will take about 12 minutes to finish.
 
