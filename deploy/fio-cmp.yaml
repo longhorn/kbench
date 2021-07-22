@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: benchmark-pvc-1
+spec:
+  volumeMode: Filesystem
+  #volumeMode: Block
+  #storageClassName: longhorn  # replace with your storage class
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: benchmark-pvc-2
+spec:
+  volumeMode: Filesystem
+  #volumeMode: Block
+  storageClassName: longhorn  # replace with your storage class
+  #storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: benchmark
+spec:
+  template:
+    metadata:
+      labels:
+        benchmark: fio
+    spec:
+      containers:
+      - name: benchmark
+        image: longhornio/benchmark:latest
+        imagePullPolicy: Always
+        env:
+        #- name: QUICK_MODE  # for debugging
+        #  value: "1"
+        - name: FIRST_VOL_NAME
+          value: first_volume
+        - name: FIRST_VOL_FILE
+          value: "/volume1/test"
+        - name: SECOND_VOL_NAME
+          value: second_volume
+        - name: SECOND_VOL_FILE
+          value: "/volume2/test"
+        - name: SIZE
+          value: "2G" # must be smaller or match the PVC size
+        volumeMounts:
+        - name: vol1
+          mountPath: /volume1/
+        - name: vol2
+          mountPath: /volume2/
+        command: ["bash", "/fio/cmp_run.sh"]
+        #volumeDevices:
+        #- name: vol1
+        #  devicePath: /volume1/test
+        #- name: vol2
+        #  devicePath: /volume2/test
+      restartPolicy: Never
+      volumes:
+      - name: vol1
+        persistentVolumeClaim:
+          claimName: benchmark-pvc-1
+      - name: vol2
+        persistentVolumeClaim:
+          claimName: benchmark-pvc-2
+  backoffLimit: 0
