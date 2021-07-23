@@ -57,27 +57,27 @@ $QUICK_MODE_TEXT
 
 printf -v cxt "IOPS (Read/Write)\n$FMT$FMT$FMT\n"\
 	"Random:" \
-	"$RAND_READ_IOPS / $RAND_WRITE_IOPS" \
+	"$(commaize $RAND_READ_IOPS) / $(commaize $RAND_WRITE_IOPS)" \
 	"Sequential:" \
-	"$SEQ_READ_IOPS / $SEQ_WRITE_IOPS" \
+	"$(commaize $SEQ_READ_IOPS) / $(commaize $SEQ_WRITE_IOPS)" \
 	"CPU Idleness:" \
 	"$CPU_IDLE_PCT_IOPS%"
 SUMMARY+=$cxt
 
 printf -v cxt "Bandwidth in KiB/sec (Read/Write)\n$FMT$FMT$FMT\n"\
 	"Random:" \
-	"$RAND_READ_BW / $RAND_WRITE_BW" \
+	"$(commaize $RAND_READ_BW) / $(commaize $RAND_WRITE_BW)" \
 	"Sequential:" \
-	"$SEQ_READ_BW / $SEQ_WRITE_BW" \
+	"$(commaize $SEQ_READ_BW) / $(commaize $SEQ_WRITE_BW)" \
 	"CPU Idleness:" \
 	"$CPU_IDLE_PCT_BW%"
 SUMMARY+=$cxt
 
 printf -v cxt "Latency in ns (Read/Write)\n$FMT$FMT$FMT\n"\
 	"Random:" \
-	"$RAND_READ_LAT / $RAND_WRITE_LAT" \
+	"$(commaize $RAND_READ_LAT) / $(commaize $RAND_WRITE_LAT)" \
 	"Sequential:" \
-	"$SEQ_READ_LAT / $SEQ_WRITE_LAT" \
+	"$(commaize $SEQ_READ_LAT) / $(commaize $SEQ_WRITE_LAT)" \
 	"CPU Idleness:" \
 	"$CPU_IDLE_PCT_LAT%"
 SUMMARY+=$cxt
