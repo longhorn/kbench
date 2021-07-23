@@ -130,13 +130,13 @@ See [./deploy/fio.yaml](https://github.com/yasker/benchmark/blob/main/deploy/fio
     wget https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio-cmp.yaml
     ```
 1. Set the storage class for each volume you want to compare.
-  * By default, it's `local-path` vs `longhorn`.
-  * You can install a storage provider for local storage like [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) for this test if you're testing with Kubernetes.
+    * By default, it's `local-path` vs `longhorn`.
+    * You can install a storage provider for local storage like [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) for this test if you're testing with Kubernetes.
 1. Update the `FIRST_VOL_NAME` and `SECOND_VOL_NAME` fields in the yaml to the name you want to call them
-  * By default, it's also `Local-Path` vs `Longhorn`.
+    * By default, it's also `Local-Path` vs `Longhorn`.
 1. Update the `SIZE` of PVCs and the benchmark configuration.
-  * By default, the size for comparison benchmark is **`30G`**.
-  * As mentioned above, for formal benchmark, the size should be **at least 25 times the read/write bandwidth** to avoid the caching impacting the result.
+    * By default, the size for comparison benchmark is **`30G`**.
+    * As mentioned above, for formal benchmark, the size should be **at least 25 times the read/write bandwidth** to avoid the caching impacting the result.
 1. Deploy using
     ```
     kubectl apply -f fio-cmp.yaml
