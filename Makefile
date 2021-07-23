@@ -1,4 +1,4 @@
 TARGETS := all
 
 $(TARGETS):
-	docker build -t longhornio/benchmark .
+	docker build -t yasker/benchmark .

@@ -108,7 +108,7 @@ By default:
 Step to deploy:
 1. One line to start benchmarking your default storage class:
     ```
-    kubectl apply -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
+    kubectl apply -f https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio.yaml
     ```
 1. Observe the Result:
     ```
@@ -116,21 +116,21 @@ Step to deploy:
     ```
 1. Cleanup:
     ```
-    kubectl delete -f https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio.yaml
+    kubectl delete -f https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio.yaml
     ```
 
 Note: a single benchmark for FIO will take about 6 minutes to finish.
 
-See [./deploy/fio.yaml](https://github.com/longhorn/benchmark/blob/main/deploy/fio.yaml) for available options.
+See [./deploy/fio.yaml](https://github.com/yasker/benchmark/blob/main/deploy/fio.yaml) for available options.
 
 #### Deploy Comparison Benchmark in Kubernetes cluster
 
 1. Get a local copy of `fio-cmp.yaml`
     ```
-    wget https://raw.githubusercontent.com/longhorn/benchmark/main/deploy/fio-cmp.yaml
+    wget https://raw.githubusercontent.com/yasker/benchmark/main/deploy/fio-cmp.yaml
     ```
 1. Set the storage class for each volume you want to compare.
-* By default, it's `local-path` vs `longhorn`.
+* By default, it's `local-path` vs `yasker`.
 * You can install a storage provider for local storage like [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) for this test if you're testing with Kubernetes.
 1. Update the `FIRST_VOL_NAME` and `SECOND_VOL_NAME` fields in the yaml to the name you want to call them
 * By default, it's also `Local-Path` vs `Longhorn`.
@@ -152,16 +152,16 @@ See [./deploy/fio.yaml](https://github.com/longhorn/benchmark/blob/main/deploy/f
 
 Note: a comparison benchmark for FIO will take about 12 minutes to finish.
 
-See [./deploy/fio-cmp.yaml](https://github.com/longhorn/benchmark/blob/main/deploy/fio-cmp.yaml) for available options.
+See [./deploy/fio-cmp.yaml](https://github.com/yasker/benchmark/blob/main/deploy/fio-cmp.yaml) for available options.
 
 #### Run Single Volume Benchmark as Container Locally
 
 ```
-docker run -v /volume longhornio/benchmark:latest /volume/test.img
+docker run -v /volume yasker/benchmark:latest /volume/test.img
 ```
 e.g.
 ```
-docker run -e "SIZE=100M" -v /volume longhornio/benchmark:latest /volume/test.img
+docker run -e "SIZE=100M" -v /volume yasker/benchmark:latest /volume/test.img
 ```
 
 #### Run Single Volume Benchmark as a Binary Locally
@@ -181,7 +181,7 @@ The output will be printed out as well as saved into `<output_prefix>.summary`.
 
 ## License
 
-Copyright (c) 2014-2021 The Longhorn Authors
+Copyright (c) 2021 Sheng Yang
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
