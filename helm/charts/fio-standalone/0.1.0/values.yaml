@@ -1,0 +1,23 @@
+pvc:
+  # specify storage class to test;
+  # "" will use the default StorageClass for the cluster
+  storageClassName: ""
+  # size of PVC; must be larger than benchmark.size
+  # NOTE the format: 3Gi, 5Gi, etc.
+  size: "3Gi"
+  # mode for PVC - "Filesystem" or "Block"
+  volumeMode: "Filesystem"
+
+benchmark:
+  # size of benchmark tests; must be smaller than pvc.size
+  # NOTE the format: 2G, 4G, etc.
+  size: "2G"
+  image:
+    repository: "yasker/benchmark"
+    pullPolicy: "IfNotPresent"
+    tag: "latest"
+  imagePullSecrets: []
+  quickMode: false
+
+nameOverride: ""
+fullnameOverride: ""

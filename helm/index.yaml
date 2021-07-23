@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  fio-standalone:
+  - apiVersion: v2
+    created: "2021-07-23T02:12:49.792704-04:00"
+    description: Benchmark a single Kubernetes StorageClass
+    digest: f847c4e45bb4187810313a48e0ed4884eb1130c65cda9c165725ddedd25673fc
+    name: fio-standalone
+    type: application
+    urls:
+    - assets/fio-standalone-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-07-23T02:12:49.791916-04:00"

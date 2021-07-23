@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "fio-standalone.fullname" . }}
+spec:
+  template:
+    metadata:
+      labels:
+        benchmark: fio
+    spec:
+      containers:
+        - name: benchmark
+          image: {{ .Values.benchmark.image.repository }}:{{ .Values.benchmark.image.tag }}
+          imagePullPolicy: {{ .Values.benchmark.image.pullPolicy }}
+          env:
+            {{- if .Values.benchmark.quickMode }}
+            - name: QUICK_MODE  # for debugging
+              value: "1"
+            {{- end }}
+            - name: FILE_NAME
+              value: "/volume/test"
+            - name: SIZE
+              value: "2G" # must be smaller or match the PVC size
+          volumeMounts:
+            - name: vol
+              mountPath: /volume/
+      imagePullSecrets: {{ .Values.benchmark.imagePullSecrets }}
+      restartPolicy: Never
+      volumes:
+        - name: vol
+          persistentVolumeClaim:
+            claimName: {{ include "fio-standalone.fullname" . }}
+  backoffLimit: 0

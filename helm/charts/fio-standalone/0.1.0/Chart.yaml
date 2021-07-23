@@ -1,0 +1,5 @@
+apiVersion: v2
+name: fio-standalone
+description: Benchmark a single Kubernetes StorageClass
+type: application
+version: 0.1.0
