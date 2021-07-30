@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: benchmark-pvc-1
+  name: kbench-pvc-1
 spec:
   volumeMode: Filesystem
   #volumeMode: Block
@@ -16,7 +16,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: benchmark-pvc-2
+  name: kbench-pvc-2
 spec:
   volumeMode: Filesystem
   #volumeMode: Block
@@ -31,16 +31,16 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: benchmark
+  name: kbench
 spec:
   template:
     metadata:
       labels:
-        benchmark: fio
+        kbench: fio
     spec:
       containers:
-      - name: benchmark
-        image: yasker/benchmark:latest
+      - name: kbench
+        image: yasker/kbench:latest
         imagePullPolicy: Always
         env:
         #- name: QUICK_MODE  # for debugging
@@ -70,8 +70,8 @@ spec:
       volumes:
       - name: vol1
         persistentVolumeClaim:
-          claimName: benchmark-pvc-1
+          claimName: kbench-pvc-1
       - name: vol2
         persistentVolumeClaim:
-          claimName: benchmark-pvc-2
+          claimName: kbench-pvc-2
   backoffLimit: 0
