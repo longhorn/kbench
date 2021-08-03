@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "fio-standalone.fullname" . }}
+  name: {{ include "fio.fullname" . }}
 spec:
   template:
     metadata:
@@ -20,7 +20,7 @@ spec:
             - name: FILE_NAME
               value: "/volume/test"
             - name: SIZE
-              value: "2G" # must be smaller or match the PVC size
+              value: {{ .Values.benchmark.size | quote }}
           volumeMounts:
             - name: vol
               mountPath: /volume/
@@ -29,5 +29,5 @@ spec:
       volumes:
         - name: vol
           persistentVolumeClaim:
-            claimName: {{ include "fio-standalone.fullname" . }}
+            claimName: {{ include "fio.fullname" . }}
   backoffLimit: 0

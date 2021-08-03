@@ -1,7 +1,0 @@
-Benchmark against StorageClass {{ .Values.pvc.storageClassName }} is running!
-
-Check the status of the Job to see when the benchmark is complete:
-kubectl get jobs -n {{ .Release.Namespace }}
-
-View logs of the completed benchmark:
-kubectl logs -n {{ .Release.Namespace }} job/{{ include "fio-standalone.fullname" . }}
