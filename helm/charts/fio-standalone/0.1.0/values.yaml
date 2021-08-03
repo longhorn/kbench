@@ -3,17 +3,17 @@ pvc:
   # "" will use the default StorageClass for the cluster
   storageClassName: ""
   # size of PVC; must be larger than benchmark.size
-  # NOTE the format: 3Gi, 5Gi, etc.
-  size: "3Gi"
+  # NOTE the format: 33Gi, 45Gi, etc.
+  size: "33Gi"
   # mode for PVC - "Filesystem" or "Block"
   volumeMode: "Filesystem"
 
 benchmark:
   # size of benchmark tests; must be smaller than pvc.size
-  # NOTE the format: 2G, 4G, etc.
-  size: "2G"
+  # NOTE the format: 30G, 40G, etc.
+  size: "30G"
   image:
-    repository: "yasker/benchmark"
+    repository: "yasker/kbench"
     pullPolicy: "IfNotPresent"
     tag: "latest"
   imagePullSecrets: []
