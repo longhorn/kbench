@@ -25,9 +25,12 @@ then
 fi
 echo TEST_OUTPUT_PREFIX: $OUTPUT
 
-TEST_SIZE="10g"
-if [ -n "$SIZE" ]; then
+TEST_SIZE=$3
+if [ -z "$TEST_SIZE" ]; then
        TEST_SIZE=$SIZE
+fi
+if [ -z "$TEST_SIZE" ]; then
+       TEST_SIZE="10g"
 fi
 echo TEST_SIZE: $TEST_SIZE
 
