@@ -1,2 +1,2 @@
 bs=4k
-iodepth=4
+iodepth=1
