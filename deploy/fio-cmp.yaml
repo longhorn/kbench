@@ -55,6 +55,8 @@ spec:
           value: "/volume2/test"
         - name: SIZE
           value: "30G" # must be smaller or match the PVC size
+        - name: CPU_IDLE_PROF
+          value: "disabled" # must be "enabled" or "disabled"
         volumeMounts:
         - name: vol1
           mountPath: /volume1/

@@ -73,20 +73,21 @@ calc_cmp_lat
 
 RESULT=${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}.summary
 
-QUICK_MODE_TEXT="QUICK MODE: DISABLED"
+QUICK_MODE_TEXT="Quick Mode: disabled"
 if [ -n "$QUICK_MODE" ]; then
-	QUICK_MODE_TEXT="QUICK MODE ENABLED"
+	QUICK_MODE_TEXT="Quick Mode: enabled"
 fi
 
 SIZE_TEXT="SIZE: 10g"
 if [ -n "$SIZE" ]; then
-	SIZE_TEXT="SIZE: $SIZE"
+	SIZE_TEXT="Size: $SIZE"
 fi
 
 SUMMARY="
 ================================
 FIO Benchmark Comparsion Summary
 For: $FIRST_VOL_NAME vs $SECOND_VOL_NAME
+CPU Idleness Profiling: $CPU_IDLE_PROF
 $SIZE_TEXT
 $QUICK_MODE_TEXT
 ================================
@@ -96,68 +97,115 @@ printf -v header "$CMP_FMT" \
 	"" $FIRST_VOL_NAME "vs" $SECOND_VOL_NAME ":" "Change"
 SUMMARY+=$header
 
-printf -v cxt "IOPS (Read/Write)\n$CMP_FMT$CMP_FMT$CMP_FMT\n" \
-	"Random:" \
-        "$(commaize $FIRST_RAND_READ_IOPS) / $(commaize $FIRST_RAND_WRITE_IOPS)" \
-	"vs" \
-        "$(commaize $SECOND_RAND_READ_IOPS) / $(commaize $SECOND_RAND_WRITE_IOPS)"\
-        ":" \
-	"$CMP_RAND_READ_IOPS / $CMP_RAND_WRITE_IOPS"\
-	"Sequential:" \
-        "$(commaize $FIRST_SEQ_READ_IOPS) / $(commaize $FIRST_SEQ_WRITE_IOPS)" \
-	"vs" \
-        "$(commaize $SECOND_SEQ_READ_IOPS) / $(commaize $SECOND_SEQ_WRITE_IOPS)" \
-        ":" \
-	"$CMP_SEQ_READ_IOPS / $CMP_SEQ_WRITE_IOPS"\
-	"CPU Idleness:" \
-	"$FIRST_CPU_IDLE_PCT_IOPS%"\
-	"vs" \
-	"$SECOND_CPU_IDLE_PCT_IOPS%"\
-        ":" \
-	"$CMP_CPU_IDLE_PCT_IOPS%"
-SUMMARY+=$cxt
+if [ x"$CPU_IDLE_PROF" = x"enabled" ]; then
+	printf -v cxt "IOPS (Read/Write)\n$CMP_FMT$CMP_FMT$CMP_FMT\n" \
+		"Random:" \
+		"$(commaize $FIRST_RAND_READ_IOPS) / $(commaize $FIRST_RAND_WRITE_IOPS)" \
+		"vs" \
+		"$(commaize $SECOND_RAND_READ_IOPS) / $(commaize $SECOND_RAND_WRITE_IOPS)" \
+		":" \
+		"$CMP_RAND_READ_IOPS / $CMP_RAND_WRITE_IOPS" \
+		"Sequential:" \
+		"$(commaize $FIRST_SEQ_READ_IOPS) / $(commaize $FIRST_SEQ_WRITE_IOPS)" \
+		"vs" \
+		"$(commaize $SECOND_SEQ_READ_IOPS) / $(commaize $SECOND_SEQ_WRITE_IOPS)" \
+		":" \
+		"$CMP_SEQ_READ_IOPS / $CMP_SEQ_WRITE_IOPS" \
+		"CPU Idleness:" \
+		"$FIRST_CPU_IDLE_PCT_IOPS%" \
+		"vs" \
+		"$SECOND_CPU_IDLE_PCT_IOPS%"\
+		":" \
+		"$CMP_CPU_IDLE_PCT_IOPS%"
+	SUMMARY+=$cxt
 
-printf -v cxt "Bandwidth in KiB/sec (Read/Write)\n$CMP_FMT$CMP_FMT$CMP_FMT\n" \
-	"Random:" \
-        "$(commaize $FIRST_RAND_READ_BW) / $(commaize $FIRST_RAND_WRITE_BW)" \
-	"vs" \
-        "$(commaize $SECOND_RAND_READ_BW) / $(commaize $SECOND_RAND_WRITE_BW)" \
-        ":" \
-	"$CMP_RAND_READ_BW / $CMP_RAND_WRITE_BW"\
-	"Sequential:" \
-        "$(commaize $FIRST_SEQ_READ_BW) / $(commaize $FIRST_SEQ_WRITE_BW)" \
-	"vs" \
-        "$(commaize $SECOND_SEQ_READ_BW) / $(commaize $SECOND_SEQ_WRITE_BW)" \
-        ":" \
-	"$CMP_SEQ_READ_BW / $CMP_SEQ_WRITE_BW"\
-	"CPU Idleness:" \
-	"$FIRST_CPU_IDLE_PCT_BW%"\
-	"vs" \
-	"$SECOND_CPU_IDLE_PCT_BW%" \
-        ":" \
-	"$CMP_CPU_IDLE_PCT_BW%"
-SUMMARY+=$cxt
+	printf -v cxt "Bandwidth in KiB/sec (Read/Write)\n$CMP_FMT$CMP_FMT$CMP_FMT\n" \
+		"Random:" \
+		"$(commaize $FIRST_RAND_READ_BW) / $(commaize $FIRST_RAND_WRITE_BW)" \
+		"vs" \
+		"$(commaize $SECOND_RAND_READ_BW) / $(commaize $SECOND_RAND_WRITE_BW)" \
+		":" \
+		"$CMP_RAND_READ_BW / $CMP_RAND_WRITE_BW" \
+		"Sequential:" \
+		"$(commaize $FIRST_SEQ_READ_BW) / $(commaize $FIRST_SEQ_WRITE_BW)" \
+		"vs" \
+		"$(commaize $SECOND_SEQ_READ_BW) / $(commaize $SECOND_SEQ_WRITE_BW)" \
+		":" \
+		"$CMP_SEQ_READ_BW / $CMP_SEQ_WRITE_BW" \
+		"CPU Idleness:" \
+		"$FIRST_CPU_IDLE_PCT_BW%" \
+		"vs" \
+		"$SECOND_CPU_IDLE_PCT_BW%" \
+		":" \
+		"$CMP_CPU_IDLE_PCT_BW%"
+	SUMMARY+=$cxt
 
-printf -v cxt "Latency in ns (Read/Write)\n$CMP_FMT$CMP_FMT$CMP_FMT\n" \
-	"Random:" \
-        "$(commaize $FIRST_RAND_READ_LAT) / $(commaize $FIRST_RAND_WRITE_LAT)" \
-	"vs" \
-        "$(commaize $SECOND_RAND_READ_LAT) / $(commaize $SECOND_RAND_WRITE_LAT)" \
-        ":" \
-	"$CMP_RAND_READ_LAT / $CMP_RAND_WRITE_LAT"\
-	"Sequential:" \
-        "$(commaize $FIRST_SEQ_READ_LAT) / $(commaize $FIRST_SEQ_WRITE_LAT)" \
-	"vs" \
-        "$(commaize $SECOND_SEQ_READ_LAT) / $(commaize $SECOND_SEQ_WRITE_LAT)" \
-        ":" \
-	"$CMP_SEQ_READ_LAT / $CMP_SEQ_WRITE_LAT"\
-	"CPU Idleness:" \
-	"$FIRST_CPU_IDLE_PCT_LAT%"\
-	"vs" \
-	"$SECOND_CPU_IDLE_PCT_LAT%" \
-        ":" \
-	"$CMP_CPU_IDLE_PCT_LAT%"
-SUMMARY+=$cxt
+	printf -v cxt "Latency in ns (Read/Write)\n$CMP_FMT$CMP_FMT$CMP_FMT\n" \
+		"Random:" \
+		"$(commaize $FIRST_RAND_READ_LAT) / $(commaize $FIRST_RAND_WRITE_LAT)" \
+		"vs" \
+		"$(commaize $SECOND_RAND_READ_LAT) / $(commaize $SECOND_RAND_WRITE_LAT)" \
+		":" \
+		"$CMP_RAND_READ_LAT / $CMP_RAND_WRITE_LAT" \
+		"Sequential:" \
+		"$(commaize $FIRST_SEQ_READ_LAT) / $(commaize $FIRST_SEQ_WRITE_LAT)" \
+		"vs" \
+		"$(commaize $SECOND_SEQ_READ_LAT) / $(commaize $SECOND_SEQ_WRITE_LAT)" \
+		":" \
+		"$CMP_SEQ_READ_LAT / $CMP_SEQ_WRITE_LAT" \
+		"CPU Idleness:" \
+		"$FIRST_CPU_IDLE_PCT_LAT%" \
+		"vs" \
+		"$SECOND_CPU_IDLE_PCT_LAT%" \
+		":" \
+		"$CMP_CPU_IDLE_PCT_LAT%"
+		SUMMARY+=$cxt
+else
+	printf -v cxt "IOPS (Read/Write)\n$CMP_FMT$CMP_FMT\n" \
+		"Random:" \
+		"$(commaize $FIRST_RAND_READ_IOPS) / $(commaize $FIRST_RAND_WRITE_IOPS)" \
+		"vs" \
+		"$(commaize $SECOND_RAND_READ_IOPS) / $(commaize $SECOND_RAND_WRITE_IOPS)" \
+		":" \
+		"$CMP_RAND_READ_IOPS / $CMP_RAND_WRITE_IOPS" \
+		"Sequential:" \
+		"$(commaize $FIRST_SEQ_READ_IOPS) / $(commaize $FIRST_SEQ_WRITE_IOPS)" \
+		"vs" \
+		"$(commaize $SECOND_SEQ_READ_IOPS) / $(commaize $SECOND_SEQ_WRITE_IOPS)" \
+		":" \
+		"$CMP_SEQ_READ_IOPS / $CMP_SEQ_WRITE_IOPS"
+	SUMMARY+=$cxt
+
+	printf -v cxt "Bandwidth in KiB/sec (Read/Write)\n$CMP_FMT$CMP_FMT\n" \
+		"Random:" \
+		"$(commaize $FIRST_RAND_READ_BW) / $(commaize $FIRST_RAND_WRITE_BW)" \
+		"vs" \
+		"$(commaize $SECOND_RAND_READ_BW) / $(commaize $SECOND_RAND_WRITE_BW)" \
+		":" \
+		"$CMP_RAND_READ_BW / $CMP_RAND_WRITE_BW" \
+		"Sequential:" \
+		"$(commaize $FIRST_SEQ_READ_BW) / $(commaize $FIRST_SEQ_WRITE_BW)" \
+		"vs" \
+		"$(commaize $SECOND_SEQ_READ_BW) / $(commaize $SECOND_SEQ_WRITE_BW)" \
+		":" \
+		"$CMP_SEQ_READ_BW / $CMP_SEQ_WRITE_BW"
+	SUMMARY+=$cxt
+
+	printf -v cxt "Latency in ns (Read/Write)\n$CMP_FMT$CMP_FMT\n" \
+		"Random:" \
+		"$(commaize $FIRST_RAND_READ_LAT) / $(commaize $FIRST_RAND_WRITE_LAT)" \
+		"vs" \
+		"$(commaize $SECOND_RAND_READ_LAT) / $(commaize $SECOND_RAND_WRITE_LAT)" \
+		":" \
+		"$CMP_RAND_READ_LAT / $CMP_RAND_WRITE_LAT" \
+		"Sequential:" \
+		"$(commaize $FIRST_SEQ_READ_LAT) / $(commaize $FIRST_SEQ_WRITE_LAT)" \
+		"vs" \
+		"$(commaize $SECOND_SEQ_READ_LAT) / $(commaize $SECOND_SEQ_WRITE_LAT)" \
+		":" \
+		"$CMP_SEQ_READ_LAT / $CMP_SEQ_WRITE_LAT"
+		SUMMARY+=$cxt
+fi
 
 echo "$SUMMARY" > $RESULT
 cat $RESULT

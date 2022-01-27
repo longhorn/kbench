@@ -59,6 +59,7 @@ For official benchmarking:
 1. `SIZE` environmental variable: the size should be **at least 25 times the read/write bandwidth** to avoid the caching impacting the result.
 1. If you're testing a distributed storage solution like Longhorn, always **test against the local storage first** to know what's the baseline.
     * You can install a storage provider for local storage like [Local Path Provisioner](https://github.com/rancher/local-path-provisioner) for this test if you're testing with Kubernetes.
+1. `CPU_IDLE_PROF` environmental variable: the CPU idleness profiling measures the CPU idleness, but it introduces extra overhead and reduces the storage performance. By default, the flag is disabled.
 
 ### Understanding the result
 * **IOPS**: IO operations per second. *Higher is better.*

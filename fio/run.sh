@@ -16,6 +16,10 @@ if [ -z "$TEST_FILE" ]; then
         exit 1
 fi
 
+if [ x"$CPU_IDLE_PROF" = x"enabled" ]; then
+	IDLE_PROF="--idle-prof=percpu"
+fi
+
 echo TEST_FILE: $TEST_FILE
 
 OUTPUT=$2
@@ -49,13 +53,13 @@ OUTPUT_BW=${OUTPUT}-bandwidth.json
 OUTPUT_LAT=${OUTPUT}-latency.json
 
 echo Benchmarking $IOPS_FIO into $OUTPUT_IOPS
-fio $CURRENT_DIR/$IOPS_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+fio $CURRENT_DIR/$IOPS_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
 	--output-format=json --output=$OUTPUT_IOPS
 echo Benchmarking $BW_FIO into $OUTPUT_BW
-fio $CURRENT_DIR/$BW_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+fio $CURRENT_DIR/$BW_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
 	--output-format=json --output=$OUTPUT_BW
 echo Benchmarking $LAT_FIO into $OUTPUT_LAT
-fio $CURRENT_DIR/$LAT_FIO --idle-prof=percpu --filename=$TEST_FILE --size=$TEST_SIZE \
+fio $CURRENT_DIR/$LAT_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
 	--output-format=json --output=$OUTPUT_LAT
 
 if [ -z "$SKIP_PARSE" ]; then
