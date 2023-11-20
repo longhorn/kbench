@@ -15,13 +15,13 @@ if [ -z "SECOND_VOL_NAME" ]; then
 	exit 1
 fi
 
-FIRST_IOPS=${FIRST_VOL_NAME}-iops.json
-FIRST_BW=${FIRST_VOL_NAME}-bandwidth.json
-FIRST_LAT=${FIRST_VOL_NAME}-latency.json
+FIRST_IOPS=/output/${FIRST_VOL_NAME}-iops.json
+FIRST_BW=/output/${FIRST_VOL_NAME}-bandwidth.json
+FIRST_LAT=/output/${FIRST_VOL_NAME}-latency.json
 
-SECOND_IOPS=${SECOND_VOL_NAME}-iops.json
-SECOND_BW=${SECOND_VOL_NAME}-bandwidth.json
-SECOND_LAT=${SECOND_VOL_NAME}-latency.json
+SECOND_IOPS=/output/${SECOND_VOL_NAME}-iops.json
+SECOND_BW=/output/${SECOND_VOL_NAME}-bandwidth.json
+SECOND_LAT=/output/${SECOND_VOL_NAME}-latency.json
 
 parse_iops $FIRST_IOPS
 FIRST_RAND_READ_IOPS=$RAND_READ_IOPS
@@ -71,7 +71,7 @@ SECOND_CPU_IDLE_PCT_LAT=$CPU_IDLE_PCT_LAT
 
 calc_cmp_lat
 
-RESULT=${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}.summary
+RESULT=/output/${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}.summary
 
 QUICK_MODE_TEXT="Quick Mode: disabled"
 if [ -n "$QUICK_MODE" ]; then

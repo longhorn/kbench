@@ -12,9 +12,9 @@ then
 fi
 
 PREFIX=${1}
-OUTPUT_IOPS=${PREFIX}-iops.json
-OUTPUT_BW=${PREFIX}-bandwidth.json
-OUTPUT_LAT=${PREFIX}-latency.json
+OUTPUT_IOPS=/output/${PREFIX}-iops.json
+OUTPUT_BW=/output/${PREFIX}-bandwidth.json
+OUTPUT_LAT=/output/${PREFIX}-latency.json
 
 if [ ! -f "$OUTPUT_IOPS" ]; then
         echo "$OUTPUT_IOPS doesn't exist"
@@ -34,7 +34,7 @@ else
         parse_lat $OUTPUT_LAT
 fi
 
-RESULT=${1}.summary
+RESULT=/output/${1}.summary
 
 QUICK_MODE_TEXT="Quick Mode: disabled"
 if [ -n "$QUICK_MODE" ]; then

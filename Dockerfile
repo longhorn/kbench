@@ -1,7 +1,7 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
-RUN apt update && apt install -y fio bash jq
+RUN apt update && apt install -y fio bash jq vim atop sysstat util-linux
 
 ADD ./fio/ /fio/
-WORKDIR ["/fio/"]
+WORKDIR /fio
 ENTRYPOINT ["bash", "/fio/run.sh"]
