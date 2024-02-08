@@ -50,6 +50,8 @@ spec:
               value: "true"
             - name: LONG_RUN
               value: "true"
+#            - name: RATE_IOPS
+#              value: "617"
           volumeMounts:
             - name: vol
               mountPath: /volume/
@@ -58,6 +60,14 @@ spec:
         - name: metric-exporter
           image: phanle1010/kbench:dev
           imagePullPolicy: Always
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - '[ "$(ls -A /test-result)" ]'
+            initialDelaySeconds: 30
+            periodSeconds: 10
           command:
           - metric-exporter
           - -d
@@ -87,7 +97,7 @@ spec:
         name: vol
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: "longhorn"
+        storageClassName: "local-path"
         resources:
           requests:
             storage: 20Gi
@@ -106,3 +116,4 @@ spec:
     - default
   endpoints:
   - port: http
+    interval: 30s

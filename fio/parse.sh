@@ -16,30 +16,27 @@ OUTPUT_IOPS=${PREFIX}-iops.json
 OUTPUT_BW=${PREFIX}-bandwidth.json
 OUTPUT_LAT=${PREFIX}-latency.json
 
-if [ ! -f "$OUTPUT_IOPS" ]; then
-        echo "$OUTPUT_IOPS doesn't exist"
-else
+if [ -f "$OUTPUT_IOPS" ]; then
         parse_iops $OUTPUT_IOPS
 fi
 
-if [ ! -f "$OUTPUT_BW" ]; then
-        echo "$OUTPUT_BW doesn't exist"
-else
+if [ -f "$OUTPUT_BW" ]; then
         parse_bw $OUTPUT_BW
 fi
 
-if [ ! -f "$OUTPUT_LAT" ]; then
-        echo "$OUTPUT_LAT doesn't exist"
-else
+if [ -f "$OUTPUT_LAT" ]; then
         parse_lat $OUTPUT_LAT
 fi
 
 RESULT=${1}.summary
 
-QUICK_MODE_TEXT="Quick Mode: disabled"
 if [ -n "$QUICK_MODE" ]; then
-	QUICK_MODE_TEXT="Quick Mode: enabled"
+    MODE="quick"
 fi
+if [ -z "$MODE" ]; then
+    MODE="full"
+fi
+MODE_TEXT="Mode: $MODE"
 
 SIZE_TEXT="Size: 10g"
 if [ -n "$SIZE" ]; then
@@ -52,7 +49,7 @@ FIO Benchmark Summary
 For: $PREFIX
 CPU Idleness Profiling: $CPU_IDLE_PROF
 $SIZE_TEXT
-$QUICK_MODE_TEXT
+$MODE_TEXT
 =========================
 "
 

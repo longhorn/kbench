@@ -1,0 +1,4 @@
+[seq-read-lat]
+readwrite=read
+include lat-include.fio
+include common-include.fio

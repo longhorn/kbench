@@ -22,12 +22,14 @@ fi
 
 echo TEST_FILE: $TEST_FILE
 
-OUTPUT=$2
-if [ -z $OUTPUT ];
-then
-	OUTPUT=test_device
+TEST_OUTPUT=$2
+if [ -z "$TEST_OUTPUT" ]; then
+       TEST_OUTPUT=$OUTPUT
 fi
-echo TEST_OUTPUT_PREFIX: $OUTPUT
+if [ -z $TEST_OUTPUT ]; then
+	TEST_OUTPUT="./test_device"
+fi
+echo TEST_OUTPUT_PREFIX: $TEST_OUTPUT
 
 TEST_SIZE=$3
 if [ -z "$TEST_SIZE" ]; then
@@ -38,30 +40,141 @@ if [ -z "$TEST_SIZE" ]; then
 fi
 echo TEST_SIZE: $TEST_SIZE
 
-IOPS_FIO="iops.fio"
-BW_FIO="bandwidth.fio"
-LAT_FIO="latency.fio"
 if [ -n "$QUICK_MODE" ]; then
-	echo QUICK_MODE: enabled
-        IOPS_FIO="iops-quick.fio"
-        BW_FIO="bandwidth-quick.fio"
-        LAT_FIO="latency-quick.fio"
+    echo "WARN: QUICK_MODE is being deprecated. Use MODE=\"quick\" instead"
+    MODE="quick"
+fi
+if [ -z "$MODE" ]; then
+    MODE="full"
+fi
+echo MODE: $MODE
+
+case $MODE in
+
+  "quick")
+    IOPS_FIO="iops-quick.fio"
+    BW_FIO="bandwidth-quick.fio"
+    LAT_FIO="latency-quick.fio"
+    ;;
+  "random-read-iops")
+    IOPS_FIO="iops-random-read.fio"
+    BW_FIO=""
+    LAT_FIO=""
+    ;;
+  "sequential-read-iops")
+    IOPS_FIO="iops-sequential-read.fio"
+    BW_FIO=""
+    LAT_FIO=""
+    ;;
+  "random-read-bandwidth")
+    IOPS_FIO=""
+    BW_FIO="bandwidth-random-read.fio"
+    LAT_FIO=""
+    ;;
+  "sequential-read-bandwidth")
+    IOPS_FIO=""
+    BW_FIO="bandwidth-sequential-read.fio"
+    LAT_FIO=""
+    ;;
+  "random-read-latency")
+    IOPS_FIO=""
+    BW_FIO="latency-random-read.fio"
+    LAT_FIO=""
+    ;;
+  "sequential-read-latency")
+    IOPS_FIO=""
+    BW_FIO="latency-sequential-read.fio"
+    LAT_FIO=""
+    ;;
+  "random-write-iops")
+    IOPS_FIO="iops-random-write.fio"
+    BW_FIO=""
+    LAT_FIO=""
+    ;;
+  "sequential-write-iops")
+    IOPS_FIO="iops-sequential-write.fio"
+    BW_FIO=""
+    LAT_FIO=""
+    ;;
+  "random-write-bandwidth")
+    IOPS_FIO="bandwidth-random-write.fio"
+    BW_FIO=""
+    LAT_FIO=""
+    ;;
+  "sequential-write-bandwidth")
+    IOPS_FIO="bandwidth-sequential-write.fio"
+    BW_FIO=""
+    LAT_FIO=""
+    ;;
+  "random-write-latency")
+    IOPS_FIO=""
+    BW_FIO="latency-random-write.fio"
+    LAT_FIO=""
+    ;;
+  "sequential-write-latency")
+    IOPS_FIO=""
+    BW_FIO="latency-sequential-write.fio"
+    LAT_FIO=""
+    ;;
+  "full" | "")
+    IOPS_FIO="iops.fio"
+    BW_FIO="bandwidth.fio"
+    LAT_FIO="latency.fio"
+    ;;
+
+  *)
+    echo "ERROR: unknown mode"
+    exit 1
+    ;;
+esac
+
+if [ -n "$RATE_IOPS" ]; then
+    rate_iops_flag="--rate_iops=$RATE_IOPS"
+else
+    rate_iops_flag=""
 fi
 
-OUTPUT_IOPS=${OUTPUT}-iops.json
-OUTPUT_BW=${OUTPUT}-bandwidth.json
-OUTPUT_LAT=${OUTPUT}-latency.json
-
-echo Benchmarking $IOPS_FIO into $OUTPUT_IOPS
-fio $CURRENT_DIR/$IOPS_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=$OUTPUT_IOPS
-echo Benchmarking $BW_FIO into $OUTPUT_BW
-fio $CURRENT_DIR/$BW_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=$OUTPUT_BW
-echo Benchmarking $LAT_FIO into $OUTPUT_LAT
-fio $CURRENT_DIR/$LAT_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=$OUTPUT_LAT
-
-if [ -z "$SKIP_PARSE" ]; then
-        $CURRENT_DIR/parse.sh $OUTPUT
+if [ -n "$RATE" ]; then
+    rate_flag="--rate=$RATE"
+else
+    rate_flag=""
 fi
+
+
+TEMP=./temp
+OUTPUT_IOPS=${TEST_OUTPUT}-iops.json
+OUTPUT_BW=${TEST_OUTPUT}-bandwidth.json
+OUTPUT_LAT=${TEST_OUTPUT}-latency.json
+
+keep_running="true"
+while [ "$keep_running" == "true" ]; do
+    if [ -n "$IOPS_FIO" ]; then
+        echo Benchmarking $IOPS_FIO into $OUTPUT_IOPS
+        fio $CURRENT_DIR/$IOPS_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
+          --output-format=json --output=$TEMP $rate_iops_flag $rate_flag
+        mv $TEMP $OUTPUT_IOPS
+    fi
+    if [ -n "$BW_FIO" ]; then
+        echo Benchmarking $BW_FIO into $OUTPUT_BW
+        fio $CURRENT_DIR/$BW_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
+          --output-format=json --output=$TEMP $rate_iops_flag $rate_flag
+        mv $TEMP $OUTPUT_BW
+    fi
+    if [ -n "$LAT_FIO" ]; then
+        echo Benchmarking $LAT_FIO into $OUTPUT_LAT
+        fio $CURRENT_DIR/$LAT_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
+          --output-format=json --output=$TEMP $rate_iops_flag $rate_flag
+        mv $TEMP $OUTPUT_LAT
+    fi
+
+    if [ -z "$SKIP_PARSE" ]; then
+            $CURRENT_DIR/parse.sh $TEST_OUTPUT
+    fi
+
+    sleep 1
+
+    if [ "$LONG_RUN" != "true" ]; then
+        keep_running="false"
+    fi
+done
+
