@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  fio:
+  - apiVersion: v2
+    appVersion: v0.1.0
+    created: "2021-08-03T16:41:16.873451-04:00"
+    description: Benchmark Kubernetes StorageClass performance with FIO.
+    digest: 0c788837ccac5e80388a694bb51af34cecf5faa1e830d0c54fc2c02f78830212
+    name: fio
+    type: application
+    urls:
+    - assets/fio-0.1.0.tgz
+    version: 0.1.0
+generated: "2021-08-03T16:41:16.872569-04:00"

@@ -124,7 +124,54 @@ Note: a single benchmark for FIO will take about 6 minutes to finish.
 
 See [./deploy/fio.yaml](https://github.com/yasker/kbench/blob/main/deploy/fio.yaml) for available options.
 
-#### Deploy Comparison Benchmark in Kubernetes cluster
+### Deploy Single Volume Benchmark via Helm
+
+All defaults are the same as in the YAML installation method.
+Use the following steps to prep for installation:
+```bash
+# add helm repo
+helm repo add yasker-kbench https://raw.githubusercontent.com/yasker/kbench/main/helm
+
+# create namespace for needed resources
+kubectl create ns fio-benchmarks
+```
+
+To deploy with all defaults:
+```bash
+helm upgrade --install fio-benchmark-default \
+  yasker-kbench/fio-standalone \
+  -n fio-benchmarks \
+  --version v0.1.0
+```
+
+To customize the installation, create a values.yaml or use `--set` flags:
+```bash
+# --set flags
+helm upgrade --install fio-benchmark-a \
+  yasker-kbench/fio-standalone \
+  -n fio-benchmarks \
+  --version v0.1.0 \
+  --set pvc.size=11Gi \
+  --set benchmark.size=10G
+
+# values file
+cat <<EOF > fio-benchmark-b-values.yaml
+pvc:
+  storageClassName: "local-path"
+  size: "22Gi"
+  volumeMode: "Block"
+benchmark:
+  size: "20G"
+EOF
+
+helm upgrade --install fio-benchmark-b \
+  yasker-kbench/fio-standalone \
+  -n fio-benchmarks \
+  --version v0.1.0 \
+  -f ./fio-benchmark-b-values.yaml
+```
+
+### Deploy Comparison Benchmark in Kubernetes cluster
 
 1. Get a local copy of `fio-cmp.yaml`
     ```

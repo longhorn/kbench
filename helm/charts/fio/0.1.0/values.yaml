@@ -1,0 +1,20 @@
+pvc:
+  # specify storage class to test;
+  # "" will use the default StorageClass for the cluster
+  storageClassName: ""
+  # mode for PVC - "Filesystem" or "Block"
+  volumeMode: "Filesystem"
+
+benchmark:
+  # size of benchmark
+  # NOTE required format: 10G, 30G, 40G, etc.
+  size: "30G"
+  image:
+    repository: "yasker/kbench"
+    pullPolicy: "IfNotPresent"
+    tag: "v0.1.0"
+  imagePullSecrets: []
+  quickMode: false
+
+nameOverride: ""
+fullnameOverride: ""

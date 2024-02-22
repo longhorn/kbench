@@ -1,0 +1,14 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "fio.fullname" . }}
+spec:
+  volumeMode: {{ .Values.pvc.volumeMode | quote }}
+  {{- if .Values.pvc.storageClassName }}
+  storageClassName: {{ .Values.pvc.storageClassName | quote }}
+  {{- end }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ include "fio.pvcSize" . | quote }}
