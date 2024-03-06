@@ -25,10 +25,14 @@ if [ -z "SECOND_VOL_FILE" ]; then
 	exit 1
 fi
 
+# clean up the previous result
+rm -rf /output/*
+
 #disable parsing in run.sh
 export SKIP_PARSE=1
 
-$CURRENT_DIR/run.sh $FIRST_VOL_FILE $FIRST_VOL_NAME
-$CURRENT_DIR/run.sh $SECOND_VOL_FILE $SECOND_VOL_NAME
+# already cleanup, skip it in run.sh
+SKIP_CLEANUP=1 $CURRENT_DIR/run.sh $FIRST_VOL_FILE $FIRST_VOL_NAME $FIRST_VOL_BACKEND_DEVICE
+SKIP_CLEANUP=1 $CURRENT_DIR/run.sh $SECOND_VOL_FILE $SECOND_VOL_NAME $SECOND_VOL_BACKEND_DEVICE
 
 $CURRENT_DIR/cmp_parse.sh

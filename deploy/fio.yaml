@@ -30,6 +30,8 @@ spec:
         env:
         #- name: QUICK_MODE  # for debugging
         #  value: "1"
+        - name: LONGHORN_BACKEND_DEVICE
+          value: ""  # the backend device of Longhorn volume
         - name: FILE_NAME
           value: "/volume/test"
         - name: SIZE
@@ -42,6 +44,8 @@ spec:
         #volumeDevices:
         #- name: vol
         #  devicePath: /volume/test
+        securityContext:
+          privileged: true
       restartPolicy: Never
       volumes:
       - name: vol

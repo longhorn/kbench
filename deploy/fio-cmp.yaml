@@ -49,15 +49,21 @@ spec:
           value: Local-Path
         - name: FIRST_VOL_FILE
           value: "/volume1/test"
+        - name: FIRST_VOL_BACKEND_DEVICE
+          value: "" # the backend device of first volume
         - name: SECOND_VOL_NAME
           value: Longhorn
         - name: SECOND_VOL_FILE
           value: "/volume2/test"
+        - name: SECOND_VOL_BACKEND_DEVICE
+          value: "" # the backend device of second volume
         - name: SIZE
           value: "30G" # must be smaller or match the PVC size
         - name: CPU_IDLE_PROF
           value: "disabled" # must be "enabled" or "disabled"
         volumeMounts:
+        - name: output
+          mountPath: output/
         - name: vol1
           mountPath: /volume1/
         - name: vol2
@@ -68,8 +74,14 @@ spec:
         #  devicePath: /volume1/test
         #- name: vol2
         #  devicePath: /volume2/test
+        securityContext:
+          privileged: true
       restartPolicy: Never
       volumes:
+      - name: output
+        hostPath:
+          path: /root/output # replace with your host path for output
+          type: DirectoryOrCreate
       - name: vol1
         persistentVolumeClaim:
           claimName: kbench-pvc-1
