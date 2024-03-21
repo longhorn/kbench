@@ -1,0 +1,4 @@
+[rand-read-bw]
+readwrite=randread
+include bw-include.fio
+include common-include.fio

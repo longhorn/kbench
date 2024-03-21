@@ -1,0 +1,4 @@
+[rand-read-iops]
+readwrite=randread
+include iops-include.fio
+include common-include.fio

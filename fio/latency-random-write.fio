@@ -1,0 +1,4 @@
+[rand-write-lat]
+readwrite=randwrite
+include lat-include.fio
+include common-include.fio

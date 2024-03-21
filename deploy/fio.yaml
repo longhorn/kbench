@@ -28,8 +28,8 @@ spec:
         image: yasker/kbench:latest
         imagePullPolicy: Always
         env:
-        #- name: QUICK_MODE  # for debugging
-        #  value: "1"
+#        - name: MODE
+#          value: "quick" # for debugging
         - name: FILE_NAME
           value: "/volume/test"
         - name: SIZE

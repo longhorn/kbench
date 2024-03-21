@@ -1,0 +1,4 @@
+[seq-read-bw]
+readwrite=read
+include bw-include.fio
+include common-include.fio

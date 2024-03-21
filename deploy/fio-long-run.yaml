@@ -1,0 +1,119 @@
+# Long-running test with prometheus metric exporter to monitor the data
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-sts
+  namespace: default
+  labels:
+    app: test-sts
+spec:
+  selector:
+    app: test-sts
+  ports:
+    - name: http
+      port: 80
+      targetPort: metrics
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: test-sts
+  namespace: default
+spec:
+  serviceName: test-sts
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-sts
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        app: test-sts
+    spec:
+      containers:
+        - name: kbench
+          image: phanle1010/kbench:dev
+          imagePullPolicy: Always
+          env:
+            - name: MODE
+              value: "random-read-iops"
+            - name: OUTPUT
+              value: /test-result/device
+            - name: FILE_NAME
+              value: "/volume/test"
+            - name: SIZE
+              value: "15G"
+            - name: CPU_IDLE_PROF
+              value: "disabled"
+            - name: SKIP_PARSE
+              value: "true"
+            - name: LONG_RUN
+              value: "true"
+#            - name: RATE_IOPS
+#              value: "617"
+          volumeMounts:
+            - name: vol
+              mountPath: /volume/
+            - name: shared-data
+              mountPath: /test-result
+        - name: metric-exporter
+          image: phanle1010/kbench:dev
+          imagePullPolicy: Always
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - '[ "$(ls -A /test-result)" ]'
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          command:
+          - metric-exporter
+          - -d
+          - start
+          env:
+            - name: DATA_DIR
+              value: /test-result
+            - name: VOLUME_ACCESS_MODE
+              value: rwo
+            - name: TEST_MODE
+              value: read-only
+            - name: RATE_LIMIT_TYPE
+              value: no-rate-limit
+          ports:
+            - containerPort: 8080
+              name: metrics
+          volumeMounts:
+            - name: vol
+              mountPath: /volume/
+            - name: shared-data
+              mountPath: /test-result
+      volumes:
+        - name: shared-data
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: vol
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: "local-path"
+        resources:
+          requests:
+            storage: 20Gi
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: test-sts-servicemonitor
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: test-sts
+  namespaceSelector:
+    matchNames:
+    - default
+  endpoints:
+  - port: http
+    interval: 30s

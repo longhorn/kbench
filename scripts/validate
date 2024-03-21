@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+cd $(dirname $0)/../metric-exporter
+
+echo Running validation
+
+PACKAGES="$(go list ./...)"
+
+echo Running: go vet
+go vet ${PACKAGES}
+echo Running: go fmt
+test -z "$(go fmt ${PACKAGES} | tee /dev/stderr)"
