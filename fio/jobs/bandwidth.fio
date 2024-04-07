@@ -1,0 +1,19 @@
+[randread-bandwidth]
+readwrite=randread
+include bandwidth-include.fio
+include common-include.fio
+
+[randwrite-bandwidth]
+readwrite=randwrite
+include bandwidth-include.fio
+include common-include.fio
+
+[seqread-bandwidth]
+readwrite=read
+include bandwidth-include.fio
+include common-include.fio
+
+[seqwrite-bandwidth]
+readwrite=write
+include bandwidth-include.fio
+include common-include.fio

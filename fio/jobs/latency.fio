@@ -1,0 +1,19 @@
+[randread-latency]
+readwrite=randread
+include latency-include.fio
+include common-include.fio
+
+[randwrite-latency]
+readwrite=randwrite
+include latency-include.fio
+include common-include.fio
+
+[seqread-latency]
+readwrite=read
+include latency-include.fio
+include common-include.fio
+
+[seqwrite-latency]
+readwrite=write
+include latency-include.fio
+include common-include.fio
