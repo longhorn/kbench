@@ -36,6 +36,10 @@ spec:
           value: "30G" # must be 10% smaller than the PVC size due to filesystem also took space
         - name: CPU_IDLE_PROF
           value: "disabled" # must be "enabled" or "disabled"
+        - name: IO_TYPES
+          value: "seqread,seqwrite,randread,randwrite"
+        - name: METRICS
+          value: "bandwidth,iops,latency"
         volumeMounts:
         - name: vol
           mountPath: /volume/

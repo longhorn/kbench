@@ -1,19 +1,19 @@
-[rand-read-iops]
+[randread-iops]
 readwrite=randread
 include iops-include.fio
 include common-include.fio
 
-[rand-write-iops]
+[randwrite-iops]
 readwrite=randwrite
 include iops-include.fio
 include common-include.fio
 
-[seq-read-iops]
+[seqread-iops]
 readwrite=read
 include iops-include.fio
 include common-include.fio
 
-[seq-write-iops]
+[seqwrite-iops]
 readwrite=write
 include iops-include.fio
 include common-include.fio

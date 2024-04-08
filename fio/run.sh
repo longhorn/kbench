@@ -3,65 +3,45 @@
 set -e
 
 CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
-
-TEST_FILE=$1
-
-# cmdline overrides the environment variable
-if [ -z "$TEST_FILE" ]; then
-	TEST_FILE=$FILE_NAME
-fi
+TEST_FILE="${1:-$FILE_NAME}"
+OUTPUT="${2:-test_device}"
+TEST_SIZE="${3:-${SIZE:-10g}}"
 
 if [ -z "$TEST_FILE" ]; then
-        echo Require test file name
-        exit 1
+    echo "Require test file name"
+    exit 1
 fi
+
+echo "TEST_FILE: $TEST_FILE"
+echo "TEST_OUTPUT_PREFIX: $OUTPUT"
+echo "TEST_SIZE: $TEST_SIZE"
 
 if [ x"$CPU_IDLE_PROF" = x"enabled" ]; then
-	IDLE_PROF="--idle-prof=percpu"
+    IDLE_PROF="--idle-prof=percpu"
 fi
 
-echo TEST_FILE: $TEST_FILE
+IO_TYPES="${IO_TYPES:-seqread,seqwrite,randread,randwrite}"
+METRICS="${METRICS:-bandwidth,iops,latency}"
 
-OUTPUT=$2
-if [ -z $OUTPUT ];
-then
-	OUTPUT=test_device
-fi
-echo TEST_OUTPUT_PREFIX: $OUTPUT
+echo "IO_TYPES: $IO_TYPES"
+echo "METRICS: $METRICS"
 
-TEST_SIZE=$3
-if [ -z "$TEST_SIZE" ]; then
-       TEST_SIZE=$SIZE
-fi
-if [ -z "$TEST_SIZE" ]; then
-       TEST_SIZE="10g"
-fi
-echo TEST_SIZE: $TEST_SIZE
+IFS=',' read -r -a io_types_array <<< "${IO_TYPES}"
+IFS=',' read -r -a metrics_array <<< "${METRICS}"
 
-IOPS_FIO="iops.fio"
-BW_FIO="bandwidth.fio"
-LAT_FIO="latency.fio"
-if [ -n "$QUICK_MODE" ]; then
-	echo QUICK_MODE: enabled
-        IOPS_FIO="iops-quick.fio"
-        BW_FIO="bandwidth-quick.fio"
-        LAT_FIO="latency-quick.fio"
-fi
+for TYPE in "${io_types_array[@]}"; do
+    for METRIC in "${metrics_array[@]}"; do
+        echo "Running $TYPE $METRIC test"
 
-OUTPUT_IOPS=${OUTPUT}-iops.json
-OUTPUT_BW=${OUTPUT}-bandwidth.json
-OUTPUT_LAT=${OUTPUT}-latency.json
+        JOB_FILE="$CURRENT_DIR/jobs/$METRIC.fio"
+        if [ "$QUICK_MODE" = "enabled" ]; then
+                JOB_FILE="$CURRENT_DIR/jobs/$METRIC-quick.fio"
+        fi
 
-echo Benchmarking $IOPS_FIO into $OUTPUT_IOPS
-fio $CURRENT_DIR/$IOPS_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=$OUTPUT_IOPS
-echo Benchmarking $BW_FIO into $OUTPUT_BW
-fio $CURRENT_DIR/$BW_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=$OUTPUT_BW
-echo Benchmarking $LAT_FIO into $OUTPUT_LAT
-fio $CURRENT_DIR/$LAT_FIO $IDLE_PROF --filename=$TEST_FILE --size=$TEST_SIZE \
-	--output-format=json --output=$OUTPUT_LAT
+        fio "$CURRENT_DIR/jobs/$METRIC.fio" $IDLE_PROF --section="${TYPE}-${METRIC}" --filename="$TEST_FILE" --size="$TEST_SIZE" --output-format=json --output="${OUTPUT}-${TYPE}-${METRIC}.json"
+    done
+done
 
-if [ -z "$SKIP_PARSE" ]; then
-        $CURRENT_DIR/parse.sh $OUTPUT
-fi
+"$CURRENT_DIR/parse.sh" "$IO_TYPES" "$METRICS" "$OUTPUT" "false"
+"$CURRENT_DIR/parse.sh" "$IO_TYPES" "latency" "$OUTPUT" "true"
+
