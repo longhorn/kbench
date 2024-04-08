@@ -25,10 +25,8 @@ if [ -z "SECOND_VOL_FILE" ]; then
     exit 1
 fi
 
-#disable parsing in run.sh
-export SKIP_PARSE=1
-
 $CURRENT_DIR/run.sh $FIRST_VOL_FILE $FIRST_VOL_NAME
 $CURRENT_DIR/run.sh $SECOND_VOL_FILE $SECOND_VOL_NAME
 
-$CURRENT_DIR/cmp_parse.sh "$IO_TYPES" "$METRICS"
+$CURRENT_DIR/cmp_parse.sh "$IO_TYPES" "$METRICS" "false"
+$CURRENT_DIR/cmp_parse.sh "$IO_TYPES" "latency" "true"

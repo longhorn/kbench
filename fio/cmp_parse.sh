@@ -17,6 +17,8 @@ if [ -z "${2}" ]; then
 fi
 METRICS="${2}"
 
+P99_LATENCY="${3:-false}"
+
 if [ -z "FIRST_VOL_NAME" ]; then
     echo Require the first volume name
     exit 1
@@ -49,6 +51,9 @@ parse_metrics() {
         for IO_TYPE in "${io_types_array[@]}"; do
             local output="${vol_name}-${IO_TYPE}-${METRIC}.json"
             local parse_func="parse_${IO_TYPE}_${METRIC}"
+            if [ "$P99_LATENCY" = "true" ]; then
+                parse_func="parse_${IO_TYPE}_${METRIC}_p99"
+            fi
 
             if declare -f "$parse_func" > /dev/null; then
                 $parse_func "$output"
@@ -80,8 +85,6 @@ calc_cmp_bandwidth
 calc_cmp_latency
 
 # Build the summary with header information
-RESULT=${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}.summary
-
 QUICK_MODE_TEXT="Quick Mode: disabled"
 if [ -n "$QUICK_MODE" ]; then
     QUICK_MODE_TEXT="Quick Mode: enabled"
@@ -92,21 +95,30 @@ if [ -n "$SIZE" ]; then
     SIZE_TEXT="Size: $SIZE"
 fi
 
+# Determine the file name suffix and title based on P99_LATENCY
+if [ "$P99_LATENCY" = "false" ]; then
+    FILE_SUFFIX="summary"
+    TITLE="FIO Benchmark Comparison Summary"
+else
+    FILE_SUFFIX="p99_latency.summary"
+    TITLE="FIO Benchmark P99 Latency Comparison Summary"
+fi
+
+RESULT="${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}_${FILE_SUFFIX}"
+
 SUMMARY="
-================================
-FIO Benchmark Comparsion Summary
+===============================
+$TITLE
 For: $FIRST_VOL_NAME vs $SECOND_VOL_NAME
 CPU Idleness Profiling: $CPU_IDLE_PROF
 $SIZE_TEXT
 $QUICK_MODE_TEXT
-================================
+===============================
 "
 
 printf -v header "$CMP_FMT" \
     "" $FIRST_VOL_NAME "vs" $SECOND_VOL_NAME ":" "Change"
 SUMMARY+=$header
-
-#!/bin/bash
 
 # Define a function to add metrics to the summary
 add_metrics_to_summary() {
@@ -139,7 +151,7 @@ add_metrics_to_summary() {
     local cmp_seqwrite="${25}"
     local cmp_cpu_idle_pct_seqwrite="${26}"
 
-    if [ "$CPU_IDLE_PROF" = "enabled" ]; then
+    if [ "$CPU_IDLE_PROF" = "enabled" ] && [ "$P99_LATENCY" = "false" ]; then
         printf -v cxt "${metric_name} in ${metric_unit} with CPU idleness in percent (Read/Write)\n${CMP_FMT}${CMP_FMT}${CMP_FMT}\n" \
             "Random:" \
             "$(commaize "${first_randread}") ($(commaize "${first_cpu_idle_pct_randread}")) / $(commaize "${first_randwrite}") ($(commaize "${first_cpu_idle_pct_randwrite}"))" \
@@ -174,33 +186,35 @@ if [ "x$CPU_IDLE_PROF" = "xenabled" ]; then
 fi
 
 # Example usage
-add_metrics_to_summary "IOPS" "ops" \
-    "$FIRST_RANDREAD_IOPS" "$FIRST_CPU_IDLE_PCT_RANDREAD_IOPS" \
-    "$FIRST_RANDWRITE_IOPS" "$FIRST_CPU_IDLE_PCT_RANDWRITE_IOPS" \
-    "$SECOND_RANDREAD_IOPS" "$SECOND_CPU_IDLE_PCT_RANDREAD_IOPS" \
-    "$SECOND_RANDWRITE_IOPS" "$SECOND_CPU_IDLE_PCT_RANDWRITE_IOPS" \
-    "$CMP_RANDREAD_IOPS" "$CMP_CPU_IDLE_PCT_RANDREAD_IOPS" \
-    "$CMP_RANDWRITE_IOPS" "$CMP_CPU_IDLE_PCT_RANDWRITE_IOPS" \
-    "$FIRST_SEQREAD_IOPS" "$FIRST_CPU_IDLE_PCT_SEQREAD_IOPS" \
-    "$FIRST_SEQWRITE_IOPS" "$FIRST_CPU_IDLE_PCT_SEQWRITE_IOPS" \
-    "$SECOND_SEQREAD_IOPS" "$SECOND_CPU_IDLE_PCT_SEQREAD_IOPS" \
-    "$SECOND_SEQWRITE_IOPS" "$SECOND_CPU_IDLE_PCT_SEQWRITE_IOPS" \
-    "$CMP_SEQREAD_IOPS" "$CMP_CPU_IDLE_PCT_SEQREAD_IOPS" \
-    "$CMP_SEQWRITE_IOPS" "$CMP_CPU_IDLE_PCT_SEQWRITE_IOPS"
+if [ "$P99_LATENCY" = "false" ]; then
+    add_metrics_to_summary "IOPS" "ops" \
+        "$FIRST_RANDREAD_IOPS" "$FIRST_CPU_IDLE_PCT_RANDREAD_IOPS" \
+        "$FIRST_RANDWRITE_IOPS" "$FIRST_CPU_IDLE_PCT_RANDWRITE_IOPS" \
+        "$SECOND_RANDREAD_IOPS" "$SECOND_CPU_IDLE_PCT_RANDREAD_IOPS" \
+        "$SECOND_RANDWRITE_IOPS" "$SECOND_CPU_IDLE_PCT_RANDWRITE_IOPS" \
+        "$CMP_RANDREAD_IOPS" "$CMP_CPU_IDLE_PCT_RANDREAD_IOPS" \
+        "$CMP_RANDWRITE_IOPS" "$CMP_CPU_IDLE_PCT_RANDWRITE_IOPS" \
+        "$FIRST_SEQREAD_IOPS" "$FIRST_CPU_IDLE_PCT_SEQREAD_IOPS" \
+        "$FIRST_SEQWRITE_IOPS" "$FIRST_CPU_IDLE_PCT_SEQWRITE_IOPS" \
+        "$SECOND_SEQREAD_IOPS" "$SECOND_CPU_IDLE_PCT_SEQREAD_IOPS" \
+        "$SECOND_SEQWRITE_IOPS" "$SECOND_CPU_IDLE_PCT_SEQWRITE_IOPS" \
+        "$CMP_SEQREAD_IOPS" "$CMP_CPU_IDLE_PCT_SEQREAD_IOPS" \
+        "$CMP_SEQWRITE_IOPS" "$CMP_CPU_IDLE_PCT_SEQWRITE_IOPS"
 
-add_metrics_to_summary "Bandwidth" "KiB/sec" \
-    "$FIRST_RANDREAD_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_RANDREAD_BANDWIDTH" \
-    "$FIRST_RANDWRITE_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_RANDWRITE_BANDWIDTH" \
-    "$SECOND_RANDREAD_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_RANDREAD_BANDWIDTH" \
-    "$SECOND_RANDWRITE_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_RANDWRITE_BANDWIDTH" \
-    "$CMP_RANDREAD_BANDWIDTH" "$CMP_CPU_IDLE_PCT_RANDREAD_BANDWIDTH" \
-    "$CMP_RANDWRITE_BANDWIDTH" "$CMP_CPU_IDLE_PCT_RANDWRITE_BANDWIDTH" \
-    "$FIRST_SEQREAD_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_SEQREAD_BANDWIDTH" \
-    "$FIRST_SEQWRITE_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_SEQWRITE_BANDWIDTH" \
-    "$SECOND_SEQREAD_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_SEQREAD_BANDWIDTH" \
-    "$SECOND_SEQWRITE_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_SEQWRITE_BANDWIDTH" \
-    "$CMP_SEQREAD_BANDWIDTH" "$CMP_CPU_IDLE_PCT_SEQREAD_BANDWIDTH" \
-    "$CMP_SEQWRITE_BANDWIDTH" "$CMP_CPU_IDLE_PCT_SEQWRITE_BANDWIDTH"
+    add_metrics_to_summary "Bandwidth" "KiB/sec" \
+        "$FIRST_RANDREAD_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_RANDREAD_BANDWIDTH" \
+        "$FIRST_RANDWRITE_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_RANDWRITE_BANDWIDTH" \
+        "$SECOND_RANDREAD_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_RANDREAD_BANDWIDTH" \
+        "$SECOND_RANDWRITE_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_RANDWRITE_BANDWIDTH" \
+        "$CMP_RANDREAD_BANDWIDTH" "$CMP_CPU_IDLE_PCT_RANDREAD_BANDWIDTH" \
+        "$CMP_RANDWRITE_BANDWIDTH" "$CMP_CPU_IDLE_PCT_RANDWRITE_BANDWIDTH" \
+        "$FIRST_SEQREAD_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_SEQREAD_BANDWIDTH" \
+        "$FIRST_SEQWRITE_BANDWIDTH" "$FIRST_CPU_IDLE_PCT_SEQWRITE_BANDWIDTH" \
+        "$SECOND_SEQREAD_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_SEQREAD_BANDWIDTH" \
+        "$SECOND_SEQWRITE_BANDWIDTH" "$SECOND_CPU_IDLE_PCT_SEQWRITE_BANDWIDTH" \
+        "$CMP_SEQREAD_BANDWIDTH" "$CMP_CPU_IDLE_PCT_SEQREAD_BANDWIDTH" \
+        "$CMP_SEQWRITE_BANDWIDTH" "$CMP_CPU_IDLE_PCT_SEQWRITE_BANDWIDTH"
+fi
 
 add_metrics_to_summary "Latency" "ns" \
     "$FIRST_RANDREAD_LATENCY" "$FIRST_CPU_IDLE_PCT_RANDREAD_LATENCY" \
@@ -219,5 +233,3 @@ add_metrics_to_summary "Latency" "ns" \
 
 echo "$SUMMARY" > $RESULT
 cat $RESULT
-
-

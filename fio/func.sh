@@ -75,8 +75,29 @@ parse_randwrite_latency() {
     CPU_IDLE_PCT_RANDWRITE_LATENCY=`cat $OUTPUT | jq '.cpu_idleness.system' | cut -f1 -d.`
 }
 
+# Latency 99th percentile
+parse_seqread_latency_p99() {
+    local OUTPUT=${1}
+    SEQREAD_LATENCY=`cat $OUTPUT | jq '.jobs[0].read.clat_ns.percentile["99.000000"]'| cut -f1 -d.`
+}
 
-FMT="%25s%25s\n"
+parse_seqwrite_latency_p99() {
+    local OUTPUT=${1}
+    SEQWRITE_LATENCY=`cat $OUTPUT | jq '.jobs[0].write.clat_ns.percentile["99.000000"]'| cut -f1 -d.`
+}
+
+parse_randread_latency_p99() {
+    local OUTPUT=${1}
+    RANDREAD_LATENCY=`cat $OUTPUT | jq '.jobs[0].read.clat_ns.percentile["99.000000"]'| cut -f1 -d.`
+}
+
+parse_randwrite_latency_p99() {
+    local OUTPUT=${1}
+    RANDWRITE_LATENCY=`cat $OUTPUT | jq '.jobs[0].write.clat_ns.percentile["99.000000"]'| cut -f1 -d.`
+}
+
+
+FMT="%30s%30s\n"
 CMP_FMT="%20s%30s%10s%30s%10s%25s\n"
 
 commaize() {

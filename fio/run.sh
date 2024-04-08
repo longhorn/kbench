@@ -42,7 +42,6 @@ for TYPE in "${io_types_array[@]}"; do
     done
 done
 
-if [ -z "$SKIP_PARSE" ]; then
-    "$CURRENT_DIR/parse.sh" "$IO_TYPES" "$METRICS" "$OUTPUT" 
-fi
+"$CURRENT_DIR/parse.sh" "$IO_TYPES" "$METRICS" "$OUTPUT" "false"
+"$CURRENT_DIR/parse.sh" "$IO_TYPES" "latency" "$OUTPUT" "true"
 
