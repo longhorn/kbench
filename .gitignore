@@ -1,0 +1,21 @@
+# Compiled Object files, Static and Dynamic libs (Shared Objects)
+*.o
+*.a
+*.so
+
+# Folders
+_obj
+_test
+
+# Rancher
+.dapper
+trash.lock
+.trash-conf
+bin/
+
+# patch tmp files
+*.orig
+*.rej
+
+# editors
+.idea

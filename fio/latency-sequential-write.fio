@@ -1,0 +1,4 @@
+[seq-write-lat]
+readwrite=write
+include lat-include.fio
+include common-include.fio
