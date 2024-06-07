@@ -6,7 +6,7 @@ spec:
   volumeMode: Filesystem
   #volumeMode: Block
   #storageClassName: longhorn  # replace with your storage class
-  #storageClassName: local-path
+  storageClassName: local-path
   accessModes:
     - ReadWriteOnce
   resources:
