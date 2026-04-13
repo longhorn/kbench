@@ -15,6 +15,17 @@ if [ -z "SECOND_VOL_NAME" ]; then
 	exit 1
 fi
 
+RESULT=${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}.summary
+RESULT="${RESULT//\//-}"
+RESULT="/temp/${RESULT}"
+
+if [[ ! ${FIRST_VOL_NAME} =~ ^[/]temp[/].* ]]; then
+        FIRST_VOL_NAME="/temp/${FIRST_VOL_NAME}"
+fi
+if [[ ! ${SECOND_VOL_NAME} =~ ^[/]temp[/].* ]]; then
+        SECOND_VOL_NAME="/temp/${SECOND_VOL_NAME}"
+fi
+
 FIRST_IOPS=${FIRST_VOL_NAME}-iops.json
 FIRST_BW=${FIRST_VOL_NAME}-bandwidth.json
 FIRST_LAT=${FIRST_VOL_NAME}-latency.json
@@ -70,8 +81,6 @@ SECOND_SEQ_WRITE_LAT=$SEQ_WRITE_LAT
 SECOND_CPU_IDLE_PCT_LAT=$CPU_IDLE_PCT_LAT
 
 calc_cmp_lat
-
-RESULT=${FIRST_VOL_NAME}_vs_${SECOND_VOL_NAME}.summary
 
 QUICK_MODE_TEXT="Quick Mode: disabled"
 if [ -n "$QUICK_MODE" ]; then
