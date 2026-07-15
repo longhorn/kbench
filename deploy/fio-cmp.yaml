@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
       - name: kbench
-        image: longhornio/kbench:latest
+        image: longhornio/kbench:main-head
         imagePullPolicy: Always
         env:
 #        - name: MODE
